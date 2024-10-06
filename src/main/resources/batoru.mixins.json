@@ -1,0 +1,6 @@
+{
+  "package": "org.gjdd.batoru.mixin",
+  "mixins": [
+    "LivingEntityMixin"
+  ]
+}

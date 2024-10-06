@@ -1,0 +1,10 @@
+pluginManagement {
+    repositories {
+        maven { setUrl('https://maven.fabricmc.net/') }
+        mavenCentral()
+    }
+
+    plugins {
+        id 'fabric-loom' version "$fabricLoomVersion"
+    }
+}
