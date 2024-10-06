@@ -1,5 +1,7 @@
 package org.gjdd.batoru.config;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import org.gjdd.batoru.input.Action;
 import org.gjdd.batoru.job.SkillSlot;
 
@@ -11,6 +13,19 @@ import java.util.Map;
  * @param skillSlotMappings 동작에 대응하는 스킬 슬롯을 나타내는 맵입니다.
  */
 public record BatoruConfig(Map<Action, SkillSlot> skillSlotMappings) {
+
+    /**
+     * 이 레코드의 {@link Codec}입니다.
+     */
+    public static final Codec<BatoruConfig> CODEC = RecordCodecBuilder.create(instance ->
+            instance.group(
+                    Codec.unboundedMap(
+                                    Codec.STRING.xmap(Action::valueOf, Action::name),
+                                    Codec.STRING.xmap(SkillSlot::valueOf, SkillSlot::name)
+                            ).fieldOf("skillSlotMappings")
+                            .forGetter(BatoruConfig::skillSlotMappings)
+            ).apply(instance, BatoruConfig::new)
+    );
 
     /**
      * 기본 생성자입니다.

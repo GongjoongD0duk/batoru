@@ -2,6 +2,8 @@ package org.gjdd.batoru.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
 import net.fabricmc.loader.api.FabricLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,13 +47,16 @@ public enum BatoruConfigManager {
         var configFile = new File(configDir, "config.json");
         if (configFile.exists()) {
             try (var reader = new FileReader(configFile)) {
-                config = GSON.fromJson(reader, BatoruConfig.class);
+                config = BatoruConfig.CODEC
+                        .decode(JsonOps.INSTANCE, GSON.fromJson(reader, JsonElement.class))
+                        .getOrThrow()
+                        .getFirst();
             } catch (IOException exception) {
                 LOGGER.warn("Could not read json file '{}'", configFile.getAbsolutePath(), exception);
             }
         } else {
             try (var writer = new FileWriter(configFile)) {
-                GSON.toJson(config, writer);
+                GSON.toJson(BatoruConfig.CODEC.encodeStart(JsonOps.INSTANCE, config).getOrThrow(), writer);
             } catch (IOException exception) {
                 LOGGER.warn("Could not store json file '{}'", configFile.getAbsolutePath(), exception);
             }
