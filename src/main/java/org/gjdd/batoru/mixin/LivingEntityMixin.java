@@ -2,6 +2,7 @@ package org.gjdd.batoru.mixin;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.registry.entry.RegistryEntry;
+import org.gjdd.batoru.config.BatoruConfigManager;
 import org.gjdd.batoru.internal.LivingEntityExtensions;
 import org.gjdd.batoru.job.Job;
 import org.gjdd.batoru.skill.Skill;
@@ -31,7 +32,16 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Override
     public void setJob(@Nullable RegistryEntry<Job> job) {
+        if (batoru$job == job) {
+            return;
+        }
+
         batoru$job = job;
+        if (job == null) {
+            batoru$onJobRemoved();
+        } else {
+            batoru$onJobSet(job);
+        }
     }
 
     @Override
@@ -77,5 +87,24 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
         batoru$skillCooldowns.replaceAll((skill, cooldown) -> cooldown - 1);
         batoru$skillCooldowns.values().removeIf(cooldown -> cooldown <= 0);
+    }
+
+    @Unique
+    private void batoru$onJobSet(RegistryEntry<Job> job) {
+        if (!BatoruConfigManager.INSTANCE.getConfig().autoEquipItems()) {
+            return;
+        }
+
+        var entity = (LivingEntity) (Object) this;
+        job.value()
+                .getItemStackMap()
+                .forEach((slot, itemStack) -> {
+                    entity.dropStack(entity.getEquippedStack(slot));
+                    entity.equipStack(slot, itemStack.copy());
+                });
+    }
+
+    @Unique
+    private void batoru$onJobRemoved() {
     }
 }
