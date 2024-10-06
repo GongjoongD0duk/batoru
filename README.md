@@ -12,6 +12,6 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.GongjoongD0duk:batoru:$version'
+    implementation 'com.github.GongjoongD0duk:batoru:0.1.0'
 }
 ```
