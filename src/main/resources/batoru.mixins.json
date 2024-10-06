@@ -1,6 +1,8 @@
 {
   "package": "org.gjdd.batoru.mixin",
   "mixins": [
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "PlayerInventoryMixin",
+    "ServerPlayNetworkHandlerMixin"
   ]
 }
