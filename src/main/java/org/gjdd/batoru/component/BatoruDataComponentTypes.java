@@ -1,5 +1,6 @@
 package org.gjdd.batoru.component;
 
+import eu.pb4.polymer.core.api.other.PolymerComponent;
 import net.minecraft.component.ComponentType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -14,5 +15,6 @@ public final class BatoruDataComponentTypes {
 
     public static void register() {
         Registry.register(Registries.DATA_COMPONENT_TYPE, "batoru:usable_job", USABLE_JOB);
+        PolymerComponent.registerDataComponent(USABLE_JOB);
     }
 }
