@@ -2,6 +2,8 @@ package org.gjdd.batoru.mixin;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.registry.entry.RegistryEntry;
+import org.gjdd.batoru.channeling.Channeling;
+import org.gjdd.batoru.channeling.ChannelingContext;
 import org.gjdd.batoru.config.BatoruConfigManager;
 import org.gjdd.batoru.internal.LivingEntityExtensions;
 import org.gjdd.batoru.job.Job;
@@ -24,6 +26,34 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
     private final Map<RegistryEntry<Skill>, Integer> batoru$skillCooldowns = new HashMap<>();
     @Unique
     private @Nullable RegistryEntry<Job> batoru$job;
+    @Unique
+    private @Nullable ChannelingContext batoru$channelingContext;
+
+    @Override
+    public boolean isChanneling() {
+        return batoru$channelingContext != null;
+    }
+
+    @Override
+    public boolean startChanneling(Channeling channeling) {
+        if (isChanneling()) {
+            return false;
+        }
+
+        batoru$channelingContext = new ChannelingContext(channeling, (LivingEntity) (Object) this);
+        batoru$channelingContext.channeling().onStart(batoru$channelingContext);
+        return true;
+    }
+
+    @Override
+    public boolean stopChanneling() {
+        if (!isChanneling()) {
+            return false;
+        }
+
+        batoru$channelingContext = null;
+        return true;
+    }
 
     @Override
     public @Nullable RegistryEntry<Job> getJob() {
@@ -87,6 +117,12 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
         batoru$skillCooldowns.replaceAll((skill, cooldown) -> cooldown - 1);
         batoru$skillCooldowns.values().removeIf(cooldown -> cooldown <= 0);
+        if (batoru$channelingContext != null) {
+            batoru$channelingContext.channeling().onTick(batoru$channelingContext);
+            if (batoru$channelingContext != null) {
+                batoru$channelingContext.time(batoru$channelingContext.time() + 1);
+            }
+        }
     }
 
     @Unique

@@ -1,6 +1,7 @@
 package org.gjdd.batoru.internal;
 
 import net.minecraft.registry.entry.RegistryEntry;
+import org.gjdd.batoru.channeling.Channeling;
 import org.gjdd.batoru.job.Job;
 import org.gjdd.batoru.skill.Skill;
 import org.gjdd.batoru.skill.SkillActionResult;
@@ -10,6 +11,34 @@ import org.jetbrains.annotations.Nullable;
  * {@link net.minecraft.entity.LivingEntity} 클래스에 주입되는 인터페이스입니다.
  */
 public interface LivingEntityExtensions {
+
+    /**
+     * 엔티티가 정신 집중 중인지 여부를 반환합니다.
+     *
+     * @return 엔티티 정신 집중 여부
+     */
+    default boolean isChanneling() {
+        return false;
+    }
+
+    /**
+     * 엔티티가 정신 집중을 시작하도록 합니다.
+     *
+     * @param channeling 정신 집중 객체
+     * @return 정신 집중을 시작했다면 {@code true}, 그렇지 않으면 {@code false}
+     */
+    default boolean startChanneling(Channeling channeling) {
+        return false;
+    }
+
+    /**
+     * 엔티티가 정신 집중을 중단하도록 합니다.
+     *
+     * @return 정신 집중을 중단했다면 {@code true}, 그렇지 않으면 {@code false}
+     */
+    default boolean stopChanneling() {
+        return false;
+    }
 
     /**
      * 엔티티의 직업을 반환합니다.
