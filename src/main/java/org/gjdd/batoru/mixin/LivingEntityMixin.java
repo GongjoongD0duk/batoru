@@ -96,6 +96,10 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
             return new SkillActionResult.Failure.Cooldown();
         }
 
+        if (!skill.value().getCondition().ignoreChanneling(context) && isChanneling()) {
+            return new SkillActionResult.Failure.InProgress();
+        }
+
         return skill.value().getCondition().canUse(context);
     }
 

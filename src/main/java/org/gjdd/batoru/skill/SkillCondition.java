@@ -16,6 +16,16 @@ public interface SkillCondition {
     }
 
     /**
+     * 정신 집중을 무시할지 여부를 반환합니다.
+     *
+     * @param context 스킬 컨텍스트
+     * @return 쿨다운 무시 여부
+     */
+    default boolean ignoreChanneling(SkillContext context) {
+        return false;
+    }
+
+    /**
      * 스킬을 사용할 수 있는지 여부를 반환합니다.
      *
      * @param context 스킬 컨텍스트
