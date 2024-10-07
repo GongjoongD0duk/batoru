@@ -5,6 +5,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import org.gjdd.batoru.channeling.Channeling;
 import org.gjdd.batoru.channeling.ChannelingContext;
 import org.gjdd.batoru.config.BatoruConfigManager;
+import org.gjdd.batoru.effect.Silenced;
 import org.gjdd.batoru.internal.LivingEntityExtensions;
 import org.gjdd.batoru.job.Job;
 import org.gjdd.batoru.skill.Skill;
@@ -100,6 +101,10 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
             return new SkillActionResult.Failure.InProgress();
         }
 
+        if (!skill.value().getCondition().ignoreSilenced(context) && batoru$isSilenced()) {
+            return new SkillActionResult.Failure.Silenced();
+        }
+
         return skill.value().getCondition().canUse(context);
     }
 
@@ -146,5 +151,13 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Unique
     private void batoru$onJobRemoved() {
+    }
+
+    @Unique
+    private boolean batoru$isSilenced() {
+        return ((LivingEntity) (Object) this).getActiveStatusEffects()
+                .keySet()
+                .stream()
+                .anyMatch(effect -> effect.value() instanceof Silenced);
     }
 }

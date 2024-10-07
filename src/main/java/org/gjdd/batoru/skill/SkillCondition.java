@@ -26,6 +26,16 @@ public interface SkillCondition {
     }
 
     /**
+     * 침묵 상태 효과를 무시할지 여부를 반환합니다.
+     *
+     * @param context 스킬 컨텍스트
+     * @return 침묵 상태 효과 무시 여부
+     */
+    default boolean ignoreSilenced(SkillContext context) {
+        return false;
+    }
+
+    /**
      * 스킬을 사용할 수 있는지 여부를 반환합니다.
      *
      * @param context 스킬 컨텍스트

@@ -6,6 +6,7 @@ import org.gjdd.batoru.command.JobCommand;
 import org.gjdd.batoru.command.SkillCommand;
 import org.gjdd.batoru.component.BatoruDataComponentTypes;
 import org.gjdd.batoru.config.BatoruConfigManager;
+import org.gjdd.batoru.effect.BatoruStatusEffects;
 import org.gjdd.batoru.registry.BatoruRegistries;
 import org.gjdd.batoru.registry.BatoruRegistryKeys;
 
@@ -18,6 +19,7 @@ public final class BatoruMod implements ModInitializer {
         });
         BatoruDataComponentTypes.register();
         BatoruConfigManager.INSTANCE.loadConfig();
+        BatoruStatusEffects.register();
         BatoruRegistries.register();
         BatoruRegistryKeys.register();
     }
