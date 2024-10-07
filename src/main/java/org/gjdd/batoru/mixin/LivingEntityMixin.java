@@ -4,9 +4,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.math.Vec3d;
 import org.gjdd.batoru.channeling.Channeling;
 import org.gjdd.batoru.channeling.ChannelingContext;
 import org.gjdd.batoru.config.BatoruConfigManager;
+import org.gjdd.batoru.effect.Pushed;
 import org.gjdd.batoru.effect.Silenced;
 import org.gjdd.batoru.internal.LivingEntityExtensions;
 import org.gjdd.batoru.job.Job;
@@ -28,9 +30,21 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
     @Unique
     private final Map<RegistryEntry<Skill>, Integer> batoru$skillCooldowns = new HashMap<>();
     @Unique
+    private Vec3d batoru$pushedVelocity = Vec3d.ZERO;
+    @Unique
     private @Nullable RegistryEntry<Job> batoru$job;
     @Unique
     private @Nullable ChannelingContext batoru$channelingContext;
+
+    @Override
+    public Vec3d getPushedVelocity() {
+        return batoru$pushedVelocity;
+    }
+
+    @Override
+    public void setPushedVelocity(Vec3d pushedVelocity) {
+        batoru$pushedVelocity = pushedVelocity;
+    }
 
     @Override
     public boolean isChanneling() {
@@ -122,7 +136,8 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Inject(method = "tick()V", at = @At(value = "TAIL"))
     private void batoru$injectTick(CallbackInfo info) {
-        if (((LivingEntity) (Object) this).getWorld().isClient()) {
+        var entity = (LivingEntity) (Object) this;
+        if (entity.getWorld().isClient()) {
             return;
         }
 
@@ -133,6 +148,12 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
             if (batoru$channelingContext != null) {
                 batoru$channelingContext.time(batoru$channelingContext.time() + 1);
             }
+        }
+
+        if (batoru$isPushed()) {
+            entity.setVelocity(getPushedVelocity());
+            entity.velocityDirty = true;
+            entity.velocityModified = true;
         }
     }
 
@@ -160,6 +181,14 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Unique
     private void batoru$onJobRemoved() {
+    }
+
+    @Unique
+    private boolean batoru$isPushed() {
+        return ((LivingEntity) (Object) this).getActiveStatusEffects()
+                .keySet()
+                .stream()
+                .anyMatch(effect -> effect.value() instanceof Pushed);
     }
 
     @Unique

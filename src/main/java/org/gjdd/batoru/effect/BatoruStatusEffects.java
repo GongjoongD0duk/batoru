@@ -8,6 +8,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 public final class BatoruStatusEffects {
+    public static final RegistryEntry<StatusEffect> AIRBORNE = register("airborne", new AirborneStatusEffect(StatusEffectCategory.HARMFUL, 0));
     public static final RegistryEntry<StatusEffect> DISARMED = register("disarmed", new DisarmedStatusEffect(StatusEffectCategory.HARMFUL, 0));
     public static final RegistryEntry<StatusEffect> ROOTED = register("rooted", new RootedStatusEffect(StatusEffectCategory.HARMFUL, 0));
     public static final RegistryEntry<StatusEffect> SILENCED = register("silenced", new SilencedStatusEffect(StatusEffectCategory.HARMFUL, 0));
