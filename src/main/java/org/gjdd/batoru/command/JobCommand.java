@@ -1,22 +1,22 @@
 package org.gjdd.batoru.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import net.minecraft.command.CommandRegistryAccess;
+import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.RegistryEntryReferenceArgumentType;
+import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import org.gjdd.batoru.job.Job;
-import org.gjdd.batoru.registry.BatoruRegistryKeys;
+import org.gjdd.batoru.registry.BatoruRegistries;
 
 import java.util.Collection;
 import java.util.List;
 
 public final class JobCommand {
-    public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess) {
+    public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(
                 CommandManager.literal("job")
                         .requires(source -> source.hasPermissionLevel(2))
@@ -39,11 +39,14 @@ public final class JobCommand {
                         ).then(
                                 CommandManager.literal("set")
                                         .then(
-                                                CommandManager.argument("job", RegistryEntryReferenceArgumentType.registryEntry(registryAccess, BatoruRegistryKeys.JOB))
+                                                CommandManager.argument("job", IdentifierArgumentType.identifier())
+                                                        .suggests((context, builder) -> CommandSource.suggestIdentifiers(BatoruRegistries.JOB.getIds(), builder))
                                                         .executes(context ->
                                                                 executeSet(
                                                                         context.getSource(),
-                                                                        RegistryEntryReferenceArgumentType.getRegistryEntry(context, "job", BatoruRegistryKeys.JOB),
+                                                                        BatoruRegistries.JOB
+                                                                                .getEntry(IdentifierArgumentType.getIdentifier(context, "job"))
+                                                                                .orElseThrow(),
                                                                         List.of(context.getSource().getPlayerOrThrow())
                                                                 )
                                                         ).then(
@@ -51,7 +54,9 @@ public final class JobCommand {
                                                                         .executes(context ->
                                                                                 executeSet(
                                                                                         context.getSource(),
-                                                                                        RegistryEntryReferenceArgumentType.getRegistryEntry(context, "job", BatoruRegistryKeys.JOB),
+                                                                                        BatoruRegistries.JOB
+                                                                                                .getEntry(IdentifierArgumentType.getIdentifier(context, "job"))
+                                                                                                .orElseThrow(),
                                                                                         EntityArgumentType.getPlayers(context, "targets")
                                                                                 )
                                                                         )

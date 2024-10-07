@@ -13,8 +13,8 @@ public final class BatoruMod implements ModInitializer {
     @Override
     public void onInitialize() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-            JobCommand.register(dispatcher, registryAccess);
-            SkillCommand.register(dispatcher, registryAccess);
+            JobCommand.register(dispatcher);
+            SkillCommand.register(dispatcher);
         });
         BatoruDataComponentTypes.register();
         BatoruConfigManager.INSTANCE.loadConfig();
