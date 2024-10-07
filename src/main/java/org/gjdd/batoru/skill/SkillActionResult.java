@@ -29,6 +29,12 @@ public sealed interface SkillActionResult {
         }
 
         /**
+         * 대상이 존재하지 않아 스킬을 사용할 수 없음을 나타냅니다.
+         */
+        record NoTarget() implements Failure {
+        }
+
+        /**
          * 지금은 스킬을 사용할 수 없음을 나타냅니다.
          */
         record Unavailable() implements Failure {

@@ -9,7 +9,8 @@
     "main": [
       "org.gjdd.batoru.channeling.ChannelingTest",
       "org.gjdd.batoru.job.JobTest",
-      "org.gjdd.batoru.skill.SkillTest"
+      "org.gjdd.batoru.skill.SkillTest",
+      "org.gjdd.batoru.skill.TargetedSkillTest"
     ]
   },
   "depends": {
