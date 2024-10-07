@@ -1,6 +1,8 @@
 package org.gjdd.batoru.mixin;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.entry.RegistryEntry;
 import org.gjdd.batoru.channeling.Channeling;
 import org.gjdd.batoru.channeling.ChannelingContext;
@@ -37,7 +39,7 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Override
     public boolean startChanneling(Channeling channeling) {
-        if (isChanneling()) {
+        if (isChanneling() || batoru$isSilenced()) {
             return false;
         }
 
@@ -131,6 +133,13 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
             if (batoru$channelingContext != null) {
                 batoru$channelingContext.time(batoru$channelingContext.time() + 1);
             }
+        }
+    }
+
+    @Inject(method = "onStatusEffectApplied", at = @At(value = "TAIL"))
+    private void batoru$injectOnStatusEffectApplied(StatusEffectInstance effect, Entity source, CallbackInfo info) {
+        if (!((LivingEntity) (Object) this).getWorld().isClient() && effect.getEffectType().value() instanceof Silenced) {
+            stopChanneling();
         }
     }
 
