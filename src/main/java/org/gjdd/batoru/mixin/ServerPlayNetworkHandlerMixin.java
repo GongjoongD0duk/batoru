@@ -1,11 +1,10 @@
 package org.gjdd.batoru.mixin;
 
-import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
-import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
+import net.minecraft.network.packet.c2s.play.*;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Hand;
 import org.gjdd.batoru.component.BatoruDataComponentTypes;
 import org.gjdd.batoru.config.BatoruConfigManager;
 import org.gjdd.batoru.input.Action;
@@ -30,34 +29,44 @@ public abstract class ServerPlayNetworkHandlerMixin {
             default -> null;
         };
         if (action != null) {
-            batoru$handleAction(action, () -> {}, () -> {
+            batoru$handleAction(action, Hand.MAIN_HAND, () -> {}, () -> {
                 player.currentScreenHandler.syncState();
                 info.cancel();
             });
         }
     }
 
+    @Inject(method = "onPlayerInteractItem", at = @At(value = "HEAD"), cancellable = true)
+    private void batoru$injectOnPlayerInteractItem(PlayerInteractItemC2SPacket packet, CallbackInfo info) {
+        batoru$handleAction(Action.INTERACT_ITEM, packet.getHand(), () -> {}, info::cancel);
+    }
+
     @Inject(method = "onUpdateSelectedSlot", at = @At(value = "HEAD"), cancellable = true)
     private void batoru$injectOnUpdateSelectedSlot(UpdateSelectedSlotC2SPacket packet, CallbackInfo info) {
         var action = ActionUtil.getHotbarAction(packet.getSelectedSlot());
         if (action != null) {
-            batoru$handleAction(action, () -> {
+            batoru$handleAction(action, Hand.MAIN_HAND, () -> {
                 player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.getInventory().selectedSlot));
                 info.cancel();
             }, () -> {});
         }
     }
 
+    @Inject(method = "onHandSwing", at = @At(value = "HEAD"))
+    private void batoru$injectOnHandSwing(HandSwingC2SPacket packet, CallbackInfo info) {
+        batoru$handleAction(Action.HAND_SWING, packet.getHand(), () -> {}, () -> {});
+    }
+
     @Inject(method = "onClientCommand", at = @At(value = "HEAD"))
     private void batoru$injectOnClientCommand(ClientCommandC2SPacket packet, CallbackInfo info) {
         var action = packet.getMode() == ClientCommandC2SPacket.Mode.PRESS_SHIFT_KEY ? Action.SNEAK : null;
         if (action != null) {
-            batoru$handleAction(action, () -> {}, () -> {});
+            batoru$handleAction(action, Hand.MAIN_HAND, () -> {}, () -> {});
         }
     }
 
     @Unique
-    private void batoru$handleAction(Action action, Runnable onValidSlot, Runnable onSlotActivated) {
+    private void batoru$handleAction(Action action, Hand hand, Runnable onValidSlot, Runnable onSlotActivated) {
         var job = player.getJob();
         if (job == null) {
             return;
@@ -68,7 +77,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
             return;
         }
 
-        var usableJob = player.getMainHandStack().get(BatoruDataComponentTypes.USABLE_JOB);
+        var usableJob = player.getStackInHand(hand).get(BatoruDataComponentTypes.USABLE_JOB);
         if (usableJob != null && usableJob.equals(job)) {
             var skill = job.value().getSkillMap().get(skillSlot);
             if (skill != null) {

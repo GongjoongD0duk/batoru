@@ -31,7 +31,17 @@ public enum Action {
     /**
      * 손을 바꾸는 동작.
      */
-    SWAP_OFFHAND;
+    SWAP_OFFHAND,
+
+    /**
+     * 아이템을 사용하는 동작.
+     */
+    INTERACT_ITEM,
+
+    /**
+     * 손을 휘두르는 동작.
+     */
+    HAND_SWING;
 
     /**
      * 이 동작에 해당하는 핫바 슬롯입니다.
