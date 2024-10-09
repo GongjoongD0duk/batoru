@@ -1,6 +1,8 @@
 package org.gjdd.batoru.skill;
 
 import net.minecraft.entity.Entity;
+import org.gjdd.batoru.skill.builder.TargetedSkillActionBuilder;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * 대상을 요구하는 스킬의 동작을 정의하는 클래스입니다.
@@ -8,6 +10,17 @@ import net.minecraft.entity.Entity;
  * @param <T> 탐색 대상 타입
  */
 public abstract class TargetedSkillAction<T extends Entity> implements SkillAction {
+
+    /**
+     * 이 클래스의 빌더 객체를 생성하여 반환합니다.
+     *
+     * @param targetClass 탐색 대상 클래스
+     * @return 빌더 객체
+     */
+    @ApiStatus.Experimental
+    public static <T extends Entity> TargetedSkillActionBuilder<T> builder(Class<T> targetClass) {
+        return new TargetedSkillActionBuilder<>(targetClass);
+    }
 
     /**
      * 탐색할 대상의 클래스입니다.

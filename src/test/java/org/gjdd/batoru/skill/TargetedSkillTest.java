@@ -6,27 +6,18 @@ import net.minecraft.registry.Registry;
 import org.gjdd.batoru.registry.BatoruRegistries;
 
 public final class TargetedSkillTest implements ModInitializer {
-    private final Skill targetedTestSkill = new Skill(
-            context -> new SkillActionResult.Success(),
-            new TargetedSkillAction<MobEntity>() {
-                @Override
-                protected Class<MobEntity> getTargetClass() {
-                    return MobEntity.class;
-                }
-
-                @Override
-                protected double getDistance() {
-                    return 16;
-                }
-
-                @Override
-                protected SkillActionResult performUse(SkillContext context, MobEntity target) {
-                    target.damage(context.source().getDamageSources().magic(), 5);
-                    context.source().setSkillCooldown(context.skill(), 30);
-                    return new SkillActionResult.Success();
-                }
-            }
-    );
+    private final Skill targetedTestSkill = Skill.builder()
+            .condition(
+                    SkillCondition.builder()
+                            .build()
+            ).action(
+                    TargetedSkillAction.builder(MobEntity.class)
+                            .distance(16)
+                            .performUseWithSuccess((context, target) -> {
+                                target.damage(context.source().getDamageSources().magic(), 5);
+                                context.source().setSkillCooldown(context.skill(), 30);
+                            }).build()
+            ).build();
 
     @Override
     public void onInitialize() {
