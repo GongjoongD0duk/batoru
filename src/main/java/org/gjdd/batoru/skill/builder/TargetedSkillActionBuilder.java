@@ -6,10 +6,7 @@ import org.gjdd.batoru.skill.SkillContext;
 import org.gjdd.batoru.skill.TargetedSkillAction;
 import org.jetbrains.annotations.ApiStatus;
 
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 /**
  * {@link TargetedSkillAction}의 빌더 클래스입니다.
@@ -20,10 +17,10 @@ import java.util.function.Supplier;
 public final class TargetedSkillActionBuilder<T extends Entity> {
     private final Class<T> targetClass;
 
-    private Supplier<Double> distance = () -> 0.0;
-    private Supplier<Double> margin = () -> 0.5;
-    private Predicate<T> canTarget = entity -> !entity.isSpectator() && entity.canHit();
-    private BiFunction<SkillContext, T, SkillActionResult> performUse = (context, target) -> new SkillActionResult.Failure.Unavailable();
+    private Function<SkillContext, Double> distance = context -> 0.0;
+    private Function<SkillContext, Double> margin = context -> 0.5;
+    private BiPredicate<SkillContext, T> canTarget = (context, entity) -> !entity.isSpectator() && entity.canHit();
+    private BiFunction<SkillContext, T, SkillActionResult> use = (context, target) -> new SkillActionResult.Failure.Unavailable();
 
     /**
      * 기본 생성자입니다.
@@ -37,10 +34,10 @@ public final class TargetedSkillActionBuilder<T extends Entity> {
     /**
      * {@link TargetedSkillAction}의 거리를 주어진 람다로 설정합니다.
      *
-     * @param distance Supplier 객체
+     * @param distance Function 객체
      * @return 자기 자신 객체
      */
-    public TargetedSkillActionBuilder<T> distance(Supplier<Double> distance) {
+    public TargetedSkillActionBuilder<T> distance(Function<SkillContext, Double> distance) {
         this.distance = distance;
         return this;
     }
@@ -52,16 +49,16 @@ public final class TargetedSkillActionBuilder<T extends Entity> {
      * @return 자기 자신 객체
      */
     public TargetedSkillActionBuilder<T> distance(double distance) {
-        return distance(() -> distance);
+        return distance(context -> distance);
     }
 
     /**
      * {@link TargetedSkillAction}의 마진을 주어진 람다로 설정합니다.
      *
-     * @param margin Supplier 객체
+     * @param margin Function 객체
      * @return 자기 자신 객체
      */
-    public TargetedSkillActionBuilder<T> margin(Supplier<Double> margin) {
+    public TargetedSkillActionBuilder<T> margin(Function<SkillContext, Double> margin) {
         this.margin = margin;
         return this;
     }
@@ -73,16 +70,16 @@ public final class TargetedSkillActionBuilder<T extends Entity> {
      * @return 자기 자신 객체
      */
     public TargetedSkillActionBuilder<T> margin(double margin) {
-        return margin(() -> margin);
+        return margin(context -> margin);
     }
 
     /**
      * {@link TargetedSkillAction}의 대상 조건을 주어진 람다로 설정합니다.
      *
-     * @param canTarget Predicate 객체
+     * @param canTarget BiPredicate 객체
      * @return 자기 자신 객체
      */
-    public TargetedSkillActionBuilder<T> canTarget(Predicate<T> canTarget) {
+    public TargetedSkillActionBuilder<T> canTarget(BiPredicate<SkillContext, T> canTarget) {
         this.canTarget = canTarget;
         return this;
     }
@@ -90,33 +87,33 @@ public final class TargetedSkillActionBuilder<T extends Entity> {
     /**
      * {@link TargetedSkillAction}의 대상 조건을 주어진 boolean 값으로 설정합니다.
      *
-     * @param canTarget Predicate 객체
+     * @param canTarget boolean 값
      * @return 자기 자신 객체
      */
     public TargetedSkillActionBuilder<T> canTarget(boolean canTarget) {
-        return canTarget(entity -> canTarget);
+        return canTarget((context, entity) -> canTarget);
     }
 
     /**
      * {@link TargetedSkillAction}의 동작을 주어진 람다로 설정합니다.
      *
-     * @param performUse BiFunction 객체
+     * @param use BiFunction 객체
      * @return 자기 자신 객체
      */
-    public TargetedSkillActionBuilder<T> performUse(BiFunction<SkillContext, T, SkillActionResult> performUse) {
-        this.performUse = performUse;
+    public TargetedSkillActionBuilder<T> use(BiFunction<SkillContext, T, SkillActionResult> use) {
+        this.use = use;
         return this;
     }
 
     /**
      * {@link TargetedSkillAction}의 동작을 주어진 람다로 설정합니다. 이때, 이 동작은 항상 성공을 반환하게 됩니다.
      *
-     * @param performUse BiFunction 객체
+     * @param use BiConsumer 객체
      * @return 자기 자신 객체
      */
-    public TargetedSkillActionBuilder<T> performUseWithSuccess(BiConsumer<SkillContext, T> performUse) {
-        return performUse((context, target) -> {
-            performUse.accept(context, target);
+    public TargetedSkillActionBuilder<T> useWithSuccess(BiConsumer<SkillContext, T> use) {
+        return use((context, target) -> {
+            use.accept(context, target);
             return new SkillActionResult.Success();
         });
     }
@@ -127,30 +124,25 @@ public final class TargetedSkillActionBuilder<T extends Entity> {
      * @return TargetedSkillAction 객체
      */
     public TargetedSkillAction<T> build() {
-        return new TargetedSkillAction<>() {
+        return new TargetedSkillAction<>(targetClass) {
             @Override
-            protected Class<T> getTargetClass() {
-                return targetClass;
+            protected double getDistance(SkillContext context) {
+                return distance.apply(context);
             }
 
             @Override
-            protected double getDistance() {
-                return distance.get();
+            protected double getMargin(SkillContext context) {
+                return margin.apply(context);
             }
 
             @Override
-            protected double getMargin() {
-                return margin.get();
+            protected boolean canTarget(SkillContext context, T entity) {
+                return canTarget.test(context, entity);
             }
 
             @Override
-            protected boolean canTarget(T entity) {
-                return canTarget.test(entity);
-            }
-
-            @Override
-            protected SkillActionResult performUse(SkillContext context, T target) {
-                return performUse.apply(context, target);
+            protected SkillActionResult useImpl(SkillContext context, T target) {
+                return use.apply(context, target);
             }
         };
     }

@@ -13,7 +13,7 @@ public final class TargetedSkillTest implements ModInitializer {
             ).action(
                     TargetedSkillAction.builder(MobEntity.class)
                             .distance(16)
-                            .performUseWithSuccess((context, target) -> {
+                            .useWithSuccess((context, target) -> {
                                 target.damage(context.source().getDamageSources().magic(), 5);
                                 context.source().setSkillCooldown(context.skill(), 30);
                             }).build()
