@@ -34,7 +34,7 @@ public final class Skill {
      * @return 빌더 객체
      */
     @ApiStatus.Experimental
-    static SkillBuilder builder() {
+    public static SkillBuilder builder() {
         return new SkillBuilder();
     }
 
