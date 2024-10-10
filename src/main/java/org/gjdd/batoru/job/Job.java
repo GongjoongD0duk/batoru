@@ -5,8 +5,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+import org.gjdd.batoru.job.builder.JobBuilder;
 import org.gjdd.batoru.registry.BatoruRegistries;
 import org.gjdd.batoru.skill.Skill;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -30,6 +32,16 @@ public final class Job {
     public Job(Map<SkillSlot, RegistryEntry<Skill>> skillMap, Map<EquipmentSlot, ItemStack> itemStackMap) {
         this.skillMap = skillMap;
         this.itemStackMap = itemStackMap;
+    }
+
+    /**
+     * 이 클래스의 빌더 객체를 생성하여 반환합니다.
+     *
+     * @return 빌더 객체
+     */
+    @ApiStatus.Experimental
+    public static JobBuilder builder() {
+        return new JobBuilder();
     }
 
     /**
