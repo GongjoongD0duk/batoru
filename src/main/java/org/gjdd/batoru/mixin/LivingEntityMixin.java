@@ -36,7 +36,7 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Override
     public boolean startChanneling(Channeling channeling) {
-        if (isChanneling()) {
+        if (batoru$channelingContext != null) {
             return false;
         }
 
@@ -46,11 +46,23 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
     }
 
     @Override
-    public boolean stopChanneling() {
-        if (!isChanneling()) {
+    public boolean finishChanneling() {
+        if (batoru$channelingContext == null) {
             return false;
         }
 
+        batoru$channelingContext.channeling().onFinish(batoru$channelingContext);
+        batoru$channelingContext = null;
+        return true;
+    }
+
+    @Override
+    public boolean interruptChanneling() {
+        if (batoru$channelingContext == null || batoru$channelingContext.channeling().isImmune(batoru$channelingContext)) {
+            return false;
+        }
+
+        batoru$channelingContext.channeling().onInterrupt(batoru$channelingContext);
         batoru$channelingContext = null;
         return true;
     }
@@ -124,7 +136,11 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
         if (batoru$channelingContext != null) {
             batoru$channelingContext.channeling().onTick(batoru$channelingContext);
             if (batoru$channelingContext != null) {
-                batoru$channelingContext.time(batoru$channelingContext.time() + 1);
+                if (batoru$channelingContext.time() < batoru$channelingContext.channeling().getMaxTime(batoru$channelingContext)) {
+                    batoru$channelingContext.incrementTime();
+                } else {
+                    finishChanneling();
+                }
             }
         }
     }

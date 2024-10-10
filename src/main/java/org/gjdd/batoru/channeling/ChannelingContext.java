@@ -46,7 +46,7 @@ public final class ChannelingContext {
     }
 
     @ApiStatus.Internal
-    public void time(int time) {
-        this.time = time;
+    public void incrementTime() {
+        time++;
     }
 }
