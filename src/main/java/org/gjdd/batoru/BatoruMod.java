@@ -4,6 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import org.gjdd.batoru.command.JobCommand;
 import org.gjdd.batoru.command.SkillCommand;
+import org.gjdd.batoru.compat.BatoruPlaceholder;
 import org.gjdd.batoru.component.BatoruDataComponentTypes;
 import org.gjdd.batoru.config.BatoruConfigManager;
 import org.gjdd.batoru.registry.BatoruRegistries;
@@ -20,5 +21,6 @@ public final class BatoruMod implements ModInitializer {
         BatoruConfigManager.INSTANCE.loadConfig();
         BatoruRegistries.register();
         BatoruRegistryKeys.register();
+        BatoruPlaceholder.register();
     }
 }
