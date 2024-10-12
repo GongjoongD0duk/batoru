@@ -4,7 +4,6 @@ import eu.pb4.placeholders.api.PlaceholderContext;
 import eu.pb4.placeholders.api.PlaceholderHandler;
 import eu.pb4.placeholders.api.PlaceholderResult;
 import eu.pb4.placeholders.api.Placeholders;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
@@ -14,12 +13,8 @@ import org.gjdd.batoru.skill.Skill;
 
 import java.util.function.BiFunction;
 
-public final class BatoruPlaceHolders {
-    public static void register() {
-        if (!FabricLoader.getInstance().isModLoaded("placeholder-api")) {
-            return;
-        }
-
+public final class BatoruPlaceholderApi {
+    public static void initialize() {
         register("job", (context, argument) ->
                 handleJob(
                         context,
