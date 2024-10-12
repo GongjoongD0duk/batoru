@@ -30,5 +30,8 @@
     "fabricloader": ">=${fabricLoaderVersion}",
     "fabric-api": ">=${fabricApiVersion}",
     "polymer-core": ">=${polymerVersion}"
+  },
+  "suggests": {
+    "placeholder-api": ">=${placeholderApiVersion}"
   }
 }
