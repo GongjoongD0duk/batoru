@@ -1,10 +1,14 @@
 package org.gjdd.batoru.mixin;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.network.ServerPlayerEntity;
 import org.gjdd.batoru.channeling.Channeling;
 import org.gjdd.batoru.channeling.ChannelingContext;
 import org.gjdd.batoru.config.BatoruConfigManager;
+import org.gjdd.batoru.input.Action;
+import org.gjdd.batoru.input.ActionUtil;
 import org.gjdd.batoru.internal.LivingEntityExtensions;
 import org.gjdd.batoru.job.Job;
 import org.gjdd.batoru.skill.Skill;
@@ -152,6 +156,14 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
         }
 
         var entity = (LivingEntity) (Object) this;
+        if (entity instanceof ServerPlayerEntity player) {
+            var action = batoru$findUnusedHotbarAction();
+            if (action != null) {
+                player.getInventory().selectedSlot = action.slot;
+                player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(action.slot));
+            }
+        }
+
         job.value()
                 .getItemStackMap()
                 .forEach((slot, itemStack) -> {
@@ -162,5 +174,16 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Unique
     private void batoru$onJobRemoved() {
+    }
+
+    @Unique
+    @Nullable
+    private Action batoru$findUnusedHotbarAction() {
+        var skillMappings = BatoruConfigManager.INSTANCE.getConfig().skillSlotMappings();
+        return ActionUtil.getHotbarActions()
+                .stream()
+                .filter(action -> !skillMappings.containsKey(action))
+                .findFirst()
+                .orElse(null);
     }
 }
