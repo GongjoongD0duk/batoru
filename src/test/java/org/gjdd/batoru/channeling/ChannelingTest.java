@@ -7,12 +7,12 @@ import net.minecraft.text.Text;
 
 public final class ChannelingTest implements ModInitializer {
     private final Channeling channeling = Channeling.builder()
-            .onTick(context -> {
-                context.source().sendMessage(Text.literal("channeling time: " + context.time()));
-                if (context.time() >= 50) {
-                    context.source().stopChanneling();
-                }
-            }).build();
+            .onTick(context ->
+                    context.source().sendMessage(
+                            Text.literal("channeling: " + context.time())
+                    )
+            ).stopWhen(context -> context.time() >= 10)
+            .build();
 
     @Override
     public void onInitialize() {

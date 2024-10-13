@@ -10,8 +10,20 @@ import java.util.function.Predicate;
  * {@link Channeling}의 빌더 클래스입니다.
  */
 public final class ChannelingBuilder {
+    private Predicate<ChannelingContext> stopWhen = context -> false;
     private Predicate<ChannelingContext> ignoreSilenced = context -> false;
     private Consumer<ChannelingContext> onTick = context -> {};
+
+    /**
+     * 지정된 조건을 만족할 경우, 정신 집중을 중단하도록 설정합니다.
+     *
+     * @param stopWhen Predicate 객체
+     * @return 자기 자신 객체
+     */
+    public ChannelingBuilder stopWhen(Predicate<ChannelingContext> stopWhen) {
+        this.stopWhen = stopWhen;
+        return this;
+    }
 
     /**
      * {@link Channeling#ignoreSilenced} 메서드를 주어진 람다로 설정합니다.
@@ -60,6 +72,9 @@ public final class ChannelingBuilder {
             @Override
             public void onTick(ChannelingContext context) {
                 onTick.accept(context);
+                if (stopWhen.test(context)) {
+                    context.source().stopChanneling();
+                }
             }
         };
     }
