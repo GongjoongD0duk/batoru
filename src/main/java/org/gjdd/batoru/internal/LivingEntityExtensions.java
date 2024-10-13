@@ -13,6 +13,15 @@ import org.jetbrains.annotations.Nullable;
 public interface LivingEntityExtensions {
 
     /**
+     * 엔티티가 침묵 상태인지 여부를 반환합니다.
+     *
+     * @return 침묵 상태 여부
+     */
+    default boolean isSilenced() {
+        return false;
+    }
+
+    /**
      * 엔티티가 정신 집중 중인지 여부를 반환합니다.
      *
      * @return 엔티티 정신 집중 여부

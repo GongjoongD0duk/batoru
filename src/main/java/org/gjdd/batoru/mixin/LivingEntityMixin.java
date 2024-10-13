@@ -1,12 +1,15 @@
 package org.gjdd.batoru.mixin;
 
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.gjdd.batoru.channeling.Channeling;
 import org.gjdd.batoru.channeling.ChannelingContext;
 import org.gjdd.batoru.config.BatoruConfigManager;
+import org.gjdd.batoru.effect.BatoruStatusEffectTags;
 import org.gjdd.batoru.input.Action;
 import org.gjdd.batoru.input.ActionUtil;
 import org.gjdd.batoru.internal.LivingEntityExtensions;
@@ -34,6 +37,11 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
     private @Nullable Channeling batoru$channeling;
     @Unique
     private int batoru$channelingTime = -1;
+
+    @Override
+    public boolean isSilenced() {
+        return batoru$hasStatusEffect(BatoruStatusEffectTags.SILENCED);
+    }
 
     @Override
     public boolean isChanneling() {
@@ -170,5 +178,13 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
                 .filter(action -> !skillMappings.containsKey(action))
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Unique
+    private boolean batoru$hasStatusEffect(TagKey<StatusEffect> key) {
+        return ((LivingEntity) (Object) this).getActiveStatusEffects()
+                .keySet()
+                .stream()
+                .anyMatch(effect -> effect.isIn(key));
     }
 }
