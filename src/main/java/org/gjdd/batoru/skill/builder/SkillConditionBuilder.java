@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 public final class SkillConditionBuilder {
     private Predicate<SkillContext> ignoreCooldown = context -> false;
     private Predicate<SkillContext> ignoreChanneling = context -> false;
+    private Predicate<SkillContext> ignoreSilenced = context -> false;
     private Function<SkillContext, SkillActionResult> canUse = context -> SkillActionResult.success();
 
     /**
@@ -58,6 +59,27 @@ public final class SkillConditionBuilder {
     }
 
     /**
+     * {@link SkillCondition#ignoreSilenced} 메서드를 주어진 람다로 설정합니다.
+     *
+     * @param ignoreSilenced Predicate 객체
+     * @return 자기 자신 객체
+     */
+    public SkillConditionBuilder ignoreSilenced(Predicate<SkillContext> ignoreSilenced) {
+        this.ignoreSilenced = ignoreSilenced;
+        return this;
+    }
+
+    /**
+     * {@link SkillCondition#ignoreSilenced} 메서드가 항상 주어진 boolean 값을 반환하도록 설정합니다.
+     *
+     * @param ignoreSilenced boolean 값
+     * @return 자기 자신 객체
+     */
+    public SkillConditionBuilder ignoreSilenced(boolean ignoreSilenced) {
+        return ignoreSilenced(context -> ignoreSilenced);
+    }
+
+    /**
      * {@link SkillCondition#canUse} 메서드를 주어진 람다로 설정합니다.
      *
      * @param canUse Function 객체
@@ -83,6 +105,11 @@ public final class SkillConditionBuilder {
             @Override
             public boolean ignoreChanneling(SkillContext context) {
                 return ignoreChanneling.test(context);
+            }
+
+            @Override
+            public boolean ignoreSilenced(SkillContext context) {
+                return ignoreSilenced.test(context);
             }
 
             @Override
