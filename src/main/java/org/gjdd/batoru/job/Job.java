@@ -8,7 +8,6 @@ import net.minecraft.util.Util;
 import org.gjdd.batoru.job.builder.JobBuilder;
 import org.gjdd.batoru.registry.BatoruRegistries;
 import org.gjdd.batoru.skill.Skill;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -39,7 +38,6 @@ public final class Job {
      *
      * @return 빌더 객체
      */
-    @ApiStatus.Experimental
     public static JobBuilder builder() {
         return new JobBuilder();
     }

@@ -10,8 +10,7 @@
       "org.gjdd.batoru.channeling.ChannelingTest",
       "org.gjdd.batoru.compatibility.PlaceHolderTest",
       "org.gjdd.batoru.job.JobTest",
-      "org.gjdd.batoru.skill.SkillTest",
-      "org.gjdd.batoru.skill.TargetedSkillTest"
+      "org.gjdd.batoru.skill.SkillTest"
     ]
   },
   "depends": {

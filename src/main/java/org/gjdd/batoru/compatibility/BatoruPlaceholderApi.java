@@ -51,19 +51,6 @@ public final class BatoruPlaceholderApi {
                     )
             );
         });
-        register("skill_condition", (context, argument) -> {
-            if (argument == null) {
-                return PlaceholderResult.invalid("Invalid argument!");
-            }
-
-            return handleSkill(
-                    context,
-                    argument,
-                    (entity, skill) -> PlaceholderResult.value(
-                            entity.canUseSkill(skill).getClass().getSimpleName()
-                    )
-            );
-        });
     }
 
     private static void register(String id, PlaceholderHandler handler) {

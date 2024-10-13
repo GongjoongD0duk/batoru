@@ -3,7 +3,6 @@ package org.gjdd.batoru.skill.builder;
 import org.gjdd.batoru.skill.SkillActionResult;
 import org.gjdd.batoru.skill.SkillCondition;
 import org.gjdd.batoru.skill.SkillContext;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -11,14 +10,13 @@ import java.util.function.Predicate;
 /**
  * {@link SkillCondition}의 빌더 클래스입니다.
  */
-@ApiStatus.Experimental
 public final class SkillConditionBuilder {
     private Predicate<SkillContext> ignoreCooldown = context -> false;
     private Predicate<SkillContext> ignoreChanneling = context -> false;
-    private Function<SkillContext, SkillActionResult> canUse = context -> new SkillActionResult.Success();
+    private Function<SkillContext, SkillActionResult> canUse = context -> SkillActionResult.success();
 
     /**
-     * {@link SkillCondition#ignoreCooldown} 메서드를 설정합니다.
+     * {@link SkillCondition#ignoreCooldown} 메서드를 주어진 람다로 설정합니다.
      *
      * @param ignoreCooldown Predicate 객체
      * @return 자기 자신 객체
@@ -29,7 +27,7 @@ public final class SkillConditionBuilder {
     }
 
     /**
-     * {@link SkillCondition#ignoreCooldown} 메서드가 주어진 boolean 값을 반환하도록 설정합니다.
+     * {@link SkillCondition#ignoreCooldown} 메서드가 항상 주어진 boolean 값을 반환하도록 설정합니다.
      *
      * @param ignoreCooldown boolean 값
      * @return 자기 자신 객체
@@ -39,7 +37,7 @@ public final class SkillConditionBuilder {
     }
 
     /**
-     * {@link SkillCondition#ignoreChanneling} 메서드를 설정합니다.
+     * {@link SkillCondition#ignoreChanneling} 메서드를 주어진 람다로 설정합니다.
      *
      * @param ignoreChanneling Predicate 객체
      * @return 자기 자신 객체
@@ -50,7 +48,7 @@ public final class SkillConditionBuilder {
     }
 
     /**
-     * {@link SkillCondition#ignoreChanneling} 메서드가 주어진 boolean 값을 반환하도록 설정합니다.
+     * {@link SkillCondition#ignoreChanneling} 메서드가 항상 주어진 boolean 값을 반환하도록 설정합니다.
      *
      * @param ignoreChanneling boolean 값
      * @return 자기 자신 객체
@@ -60,7 +58,7 @@ public final class SkillConditionBuilder {
     }
 
     /**
-     * {@link SkillCondition#canUse} 메서드를 설정합니다.
+     * {@link SkillCondition#canUse} 메서드를 주어진 람다로 설정합니다.
      *
      * @param canUse Function 객체
      * @return 자기 자신 객체
@@ -73,7 +71,7 @@ public final class SkillConditionBuilder {
     /**
      * 현재 설정으로 {@link SkillCondition} 객체를 생성합니다.
      *
-     * @return SkillCondition 객체
+     * @return Skill 객체
      */
     public SkillCondition build() {
         return new SkillCondition() {

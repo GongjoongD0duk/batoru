@@ -32,20 +32,11 @@ public interface LivingEntityExtensions {
     }
 
     /**
-     * 엔티티가 정신 집중을 성공적으로 마치도록 합니다.
-     *
-     * @return 정신 집중을 성공적으로 마쳤다면 {@code true}, 그렇지 않으면 {@code false}
-     */
-    default boolean finishChanneling() {
-        return false;
-    }
-
-    /**
-     * 엔티티가 정신 집중을 방해하여 중단하도록 합니다.
+     * 엔티티가 정신 집중을 중단하도록 합니다.
      *
      * @return 정신 집중을 중단했다면 {@code true}, 그렇지 않으면 {@code false}
      */
-    default boolean interruptChanneling() {
+    default boolean stopChanneling() {
         return false;
     }
 

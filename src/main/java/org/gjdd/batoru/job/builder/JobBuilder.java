@@ -6,56 +6,67 @@ import net.minecraft.registry.entry.RegistryEntry;
 import org.gjdd.batoru.job.Job;
 import org.gjdd.batoru.job.SkillSlot;
 import org.gjdd.batoru.skill.Skill;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * {@link Job}의 빌더 클래스입니다.
  */
-@ApiStatus.Experimental
 public final class JobBuilder {
-    private HashMap<SkillSlot, RegistryEntry<Skill>> skillMap = new HashMap<>();
-    private HashMap<EquipmentSlot, ItemStack> itemStackMap = new HashMap<>();
+    private final Map<SkillSlot, RegistryEntry<Skill>> skillMap = new HashMap<>();
+    private final Map<EquipmentSlot, ItemStack> itemStackMap = new HashMap<>();
 
     /**
-     * {@link Job}의 스킬 맵을 설정합니다.
+     * 주어진 스킬 맵을 설정에 포함합니다.
      *
      * @param skillMap 스킬 맵
      * @return 자기 자신 객체
      */
-    public JobBuilder skillMap(HashMap<SkillSlot, RegistryEntry<Skill>> skillMap) {
-        this.skillMap = skillMap;
+    public JobBuilder skillMap(Map<SkillSlot, RegistryEntry<Skill>> skillMap) {
+        this.skillMap.putAll(skillMap);
         return this;
     }
 
     /**
-     * {@link Job}의 아이템 스택 맵을 설정합니다.
+     * 주어진 아이템 스택 맵을 설정에 포함합니다.
      *
      * @param itemStackMap 아이템 스택 맵
      * @return 자기 자신 객체
      */
-    public JobBuilder itemStackMap(HashMap<EquipmentSlot, ItemStack> itemStackMap) {
-        this.itemStackMap = itemStackMap;
+    public JobBuilder itemStackMap(Map<EquipmentSlot, ItemStack> itemStackMap) {
+        this.itemStackMap.putAll(itemStackMap);
         return this;
     }
 
     /**
-     * 현재 설정의 {@link Job} 아이템 스택 맵에 주어진 매핑을 추가합니다.
+     * 주어진 스킬 매핑을 설정에 포함합니다.
      *
-     * @param equipmentSlot 아이템 슬롯
-     * @param itemStack     아이템 스택
+     * @param slot  스킬 슬롯
+     * @param skill 스킬 객체
      * @return 자기 자신 객체
      */
-    public JobBuilder equipStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
-        this.itemStackMap.put(equipmentSlot, itemStack);
+    public JobBuilder equipSkill(SkillSlot slot, RegistryEntry<Skill> skill) {
+        skillMap.put(slot, skill);
         return this;
     }
 
     /**
-     * 현재 설정으로 {@link Job} 객체를 생성합니다.
+     * 주어진 아이템 스택 매핑을 설정에 포함합니다.
      *
-     * @return Skill 객체
+     * @param slot  장비 슬롯
+     * @param stack 아이템 스택
+     * @return 자기 자신 객체
+     */
+    public JobBuilder equipStack(EquipmentSlot slot, ItemStack stack) {
+        itemStackMap.put(slot, stack);
+        return this;
+    }
+
+    /**
+     * 현재 설정으로 {@link Job} 객체를 생성하여 반환합니다.
+     *
+     * @return Job 객체
      */
     public Job build() {
         return new Job(skillMap, itemStackMap);

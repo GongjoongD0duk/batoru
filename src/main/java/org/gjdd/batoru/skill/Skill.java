@@ -4,7 +4,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import org.gjdd.batoru.registry.BatoruRegistries;
 import org.gjdd.batoru.skill.builder.SkillBuilder;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -33,7 +32,6 @@ public final class Skill {
      *
      * @return 빌더 객체
      */
-    @ApiStatus.Experimental
     public static SkillBuilder builder() {
         return new SkillBuilder();
     }

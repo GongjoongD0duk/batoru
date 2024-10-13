@@ -31,43 +31,34 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
     @Unique
     private @Nullable RegistryEntry<Job> batoru$job;
     @Unique
-    private @Nullable ChannelingContext batoru$channelingContext;
+    private @Nullable Channeling batoru$channeling;
+    @Unique
+    private int batoru$channelingTime = -1;
 
     @Override
     public boolean isChanneling() {
-        return batoru$channelingContext != null;
+        return batoru$channeling != null;
     }
 
     @Override
     public boolean startChanneling(Channeling channeling) {
-        if (batoru$channelingContext != null) {
+        if (batoru$channeling != null) {
             return false;
         }
 
-        batoru$channelingContext = new ChannelingContext(channeling, (LivingEntity) (Object) this);
-        batoru$channelingContext.channeling().onStart(batoru$channelingContext);
+        batoru$channelingTime = 0;
+        batoru$channeling = channeling;
         return true;
     }
 
     @Override
-    public boolean finishChanneling() {
-        if (batoru$channelingContext == null) {
+    public boolean stopChanneling() {
+        if (batoru$channeling == null) {
             return false;
         }
 
-        batoru$channelingContext.channeling().onFinish(batoru$channelingContext);
-        batoru$channelingContext = null;
-        return true;
-    }
-
-    @Override
-    public boolean interruptChanneling() {
-        if (batoru$channelingContext == null || batoru$channelingContext.channeling().isImmune(batoru$channelingContext)) {
-            return false;
-        }
-
-        batoru$channelingContext.channeling().onInterrupt(batoru$channelingContext);
-        batoru$channelingContext = null;
+        batoru$channelingTime = -1;
+        batoru$channeling = null;
         return true;
     }
 
@@ -109,11 +100,11 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
     public SkillActionResult canUseSkill(RegistryEntry<Skill> skill) {
         var context = new SkillContext(skill, (LivingEntity) (Object) this);
         if (!skill.value().getCondition().ignoreCooldown(context) && hasSkillCooldown(skill)) {
-            return new SkillActionResult.Failure.Cooldown();
+            return SkillActionResult.cooldown();
         }
 
         if (!skill.value().getCondition().ignoreChanneling(context) && isChanneling()) {
-            return new SkillActionResult.Failure.InProgress();
+            return SkillActionResult.channeling();
         }
 
         return skill.value().getCondition().canUse(context);
@@ -131,21 +122,15 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Inject(method = "tick()V", at = @At(value = "TAIL"))
     private void batoru$injectTick(CallbackInfo info) {
-        if (((LivingEntity) (Object) this).getWorld().isClient()) {
+        var entity = (LivingEntity) (Object) this;
+        if (entity.getWorld().isClient()) {
             return;
         }
 
         batoru$skillCooldowns.replaceAll((skill, cooldown) -> cooldown - 1);
         batoru$skillCooldowns.values().removeIf(cooldown -> cooldown <= 0);
-        if (batoru$channelingContext != null) {
-            batoru$channelingContext.channeling().onTick(batoru$channelingContext);
-            if (batoru$channelingContext != null) {
-                if (batoru$channelingContext.time() < batoru$channelingContext.channeling().getMaxTime(batoru$channelingContext)) {
-                    batoru$channelingContext.incrementTime();
-                } else {
-                    finishChanneling();
-                }
-            }
+        if (batoru$channeling != null) {
+            batoru$channeling.onTick(new ChannelingContext(batoru$channeling, entity, batoru$channelingTime++));
         }
     }
 

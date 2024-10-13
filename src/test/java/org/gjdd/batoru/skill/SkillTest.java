@@ -6,12 +6,17 @@ import org.gjdd.batoru.registry.BatoruRegistries;
 
 public final class SkillTest implements ModInitializer {
     private final Skill testSkill = Skill.builder()
-            .action(
+            .condition(
+                    SkillCondition.builder()
+                            .canUse(context -> SkillActionResult.success())
+                            .build()
+            ).action(
                     SkillAction.builder()
-                            .useWithSuccess(context -> {
+                            .use(context -> {
                                 context.source().velocityModified = true;
                                 context.source().setVelocity(context.source().getRotationVector());
                                 context.source().setSkillCooldown(context.skill(), 50);
+                                return SkillActionResult.success();
                             }).build()
             ).build();
 
