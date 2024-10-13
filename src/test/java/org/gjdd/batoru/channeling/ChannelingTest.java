@@ -3,16 +3,15 @@ package org.gjdd.batoru.channeling;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.server.command.CommandManager;
+import net.minecraft.text.Text;
 
 public final class ChannelingTest implements ModInitializer {
     private final Channeling channeling = Channeling.builder()
             .onTick(context -> {
-                if (context.time() >= 10) {
+                context.source().sendMessage(Text.literal("channeling time: " + context.time()));
+                if (context.time() >= 50) {
                     context.source().stopChanneling();
                 }
-
-                context.source().velocityModified = true;
-                context.source().setVelocity(context.source().getRotationVector());
             }).build();
 
     @Override
