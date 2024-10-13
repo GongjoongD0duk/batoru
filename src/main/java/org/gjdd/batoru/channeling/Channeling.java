@@ -17,6 +17,16 @@ public interface Channeling {
     }
 
     /**
+     * 침묵 상태를 무시할지 여부를 반환합니다.
+     *
+     * @param context 정신 집중 컨텍스트
+     * @return 침묵 상태 무시 여부
+     */
+    default boolean ignoreSilenced(ChannelingContext context) {
+        return false;
+    }
+
+    /**
      * 정신 집중 중일 때 매 틱마다 호출되는 메서드입니다.
      *
      * @param context 정신 집중 컨텍스트

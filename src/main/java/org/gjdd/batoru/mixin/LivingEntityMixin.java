@@ -50,7 +50,8 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Override
     public boolean startChanneling(Channeling channeling) {
-        if (batoru$channeling != null) {
+        if (batoru$channeling != null ||
+                !channeling.ignoreSilenced(channelingContext(channeling)) && isSilenced()) {
             return false;
         }
 
@@ -106,7 +107,7 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Override
     public SkillActionResult canUseSkill(RegistryEntry<Skill> skill) {
-        var context = new SkillContext(skill, (LivingEntity) (Object) this);
+        var context = skillContext(skill);
         if (!skill.value().getCondition().ignoreCooldown(context) && hasSkillCooldown(skill)) {
             return SkillActionResult.cooldown();
         }
@@ -129,21 +130,43 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
             return actionResult;
         }
 
-        return skill.value().getAction().use(new SkillContext(skill, (LivingEntity) (Object) this));
+        return skill.value().getAction().use(skillContext(skill));
     }
 
     @Inject(method = "tick()V", at = @At(value = "TAIL"))
     private void batoru$injectTick(CallbackInfo info) {
-        var entity = (LivingEntity) (Object) this;
-        if (entity.getWorld().isClient()) {
+        if (((LivingEntity) (Object) this).getWorld().isClient()) {
+            return;
+        }
+
+        batoru$skillCooldownsTick();
+        batoru$channelingTick();
+    }
+
+    @Unique
+    private void batoru$skillCooldownsTick() {
+        if (batoru$skillCooldowns.isEmpty()) {
             return;
         }
 
         batoru$skillCooldowns.replaceAll((skill, cooldown) -> cooldown - 1);
         batoru$skillCooldowns.values().removeIf(cooldown -> cooldown <= 0);
-        if (batoru$channeling != null) {
-            batoru$channeling.onTick(new ChannelingContext(batoru$channeling, entity, batoru$channelingTime++));
+    }
+
+    @Unique
+    private void batoru$channelingTick() {
+        if (batoru$channeling == null) {
+            return;
         }
+
+        var context = channelingContext(batoru$channeling);
+        if (!batoru$channeling.ignoreSilenced(context) && isSilenced()) {
+            stopChanneling();
+            return;
+        }
+
+        batoru$channeling.onTick(context);
+        batoru$channelingTime++;
     }
 
     @Unique
@@ -190,5 +213,15 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
                 .keySet()
                 .stream()
                 .anyMatch(effect -> effect.isIn(key));
+    }
+
+    @Unique
+    private ChannelingContext channelingContext(Channeling channeling) {
+        return new ChannelingContext(channeling, (LivingEntity) (Object) this, batoru$channelingTime);
+    }
+
+    @Unique
+    private SkillContext skillContext(RegistryEntry<Skill> skill) {
+        return new SkillContext(skill, (LivingEntity) (Object) this);
     }
 }
