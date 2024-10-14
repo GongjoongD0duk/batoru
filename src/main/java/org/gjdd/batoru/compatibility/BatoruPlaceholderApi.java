@@ -8,7 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import org.gjdd.batoru.job.Job;
-import org.gjdd.batoru.job.SkillSlot;
+import org.gjdd.batoru.registry.BatoruRegistries;
 import org.gjdd.batoru.skill.Skill;
 
 import java.util.function.BiFunction;
@@ -79,10 +79,13 @@ public final class BatoruPlaceholderApi {
             BiFunction<LivingEntity, RegistryEntry<Skill>, PlaceholderResult> function
     ) {
         return handleJob(context, (entity, job) -> {
-            SkillSlot skillSlot;
-            try {
-                skillSlot = SkillSlot.valueOf(argument);
-            } catch (IllegalArgumentException exception) {
+            var id = Identifier.tryParse(argument);
+            if (id == null) {
+                return PlaceholderResult.invalid("Invalid identifier!");
+            }
+
+            var skillSlot = BatoruRegistries.SKILL_SLOT.getEntry(id).orElse(null);
+            if (skillSlot == null) {
                 return PlaceholderResult.invalid("Invalid skill slot!");
             }
 

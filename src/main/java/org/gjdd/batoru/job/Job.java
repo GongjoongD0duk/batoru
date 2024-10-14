@@ -16,7 +16,7 @@ import java.util.Map;
  * 직업을 나타내는 클래스입니다.
  */
 public final class Job {
-    private final Map<SkillSlot, RegistryEntry<Skill>> skillMap;
+    private final Map<RegistryEntry<SkillSlot>, RegistryEntry<Skill>> skillMap;
     private final Map<EquipmentSlot, ItemStack> itemStackMap;
 
     private @Nullable String translationKey;
@@ -28,7 +28,7 @@ public final class Job {
      * @param skillMap     스킬 맵
      * @param itemStackMap 아이템 스택 맵
      */
-    public Job(Map<SkillSlot, RegistryEntry<Skill>> skillMap, Map<EquipmentSlot, ItemStack> itemStackMap) {
+    public Job(Map<RegistryEntry<SkillSlot>, RegistryEntry<Skill>> skillMap, Map<EquipmentSlot, ItemStack> itemStackMap) {
         this.skillMap = skillMap;
         this.itemStackMap = itemStackMap;
     }
@@ -47,7 +47,7 @@ public final class Job {
      *
      * @return 스킬 맵
      */
-    public Map<SkillSlot, RegistryEntry<Skill>> getSkillMap() {
+    public Map<RegistryEntry<SkillSlot>, RegistryEntry<Skill>> getSkillMap() {
         return skillMap;
     }
 

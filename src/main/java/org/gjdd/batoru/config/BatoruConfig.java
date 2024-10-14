@@ -3,8 +3,10 @@ package org.gjdd.batoru.config;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.registry.entry.RegistryEntry;
 import org.gjdd.batoru.input.Action;
 import org.gjdd.batoru.job.SkillSlot;
+import org.gjdd.batoru.registry.BatoruRegistries;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +22,7 @@ import java.util.Map;
  * @param autoEquipItems       직업이 정해질 때 자동으로 장비를 장착할지 여부입니다.
  */
 public record BatoruConfig(
-        Map<Action, SkillSlot> skillSlotMappings,
+        Map<Action, RegistryEntry<SkillSlot>> skillSlotMappings,
         List<EquipmentSlot> usableEquipmentSlots,
         boolean autoEquipItems
 ) {
@@ -32,7 +34,7 @@ public record BatoruConfig(
             instance.group(
                     Codec.unboundedMap(
                                     Codec.STRING.xmap(Action::valueOf, Action::name),
-                                    Codec.STRING.xmap(SkillSlot::valueOf, SkillSlot::name)
+                                    BatoruRegistries.SKILL_SLOT.getEntryCodec()
                             ).fieldOf("skillSlotMappings")
                             .forGetter(BatoruConfig::skillSlotMappings),
                     Codec.STRING
@@ -51,12 +53,7 @@ public record BatoruConfig(
      */
     public BatoruConfig() {
         this(
-                Map.of(
-                        Action.HOTBAR_1, SkillSlot.NORMAL_1,
-                        Action.HOTBAR_2, SkillSlot.NORMAL_2,
-                        Action.HOTBAR_3, SkillSlot.NORMAL_3,
-                        Action.HOTBAR_4, SkillSlot.NORMAL_4
-                ),
+                Map.of(),
                 List.of(
                         EquipmentSlot.MAINHAND,
                         EquipmentSlot.OFFHAND

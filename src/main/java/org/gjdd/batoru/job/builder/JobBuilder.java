@@ -14,7 +14,7 @@ import java.util.Map;
  * {@link Job}의 빌더 클래스입니다.
  */
 public final class JobBuilder {
-    private final Map<SkillSlot, RegistryEntry<Skill>> skillMap = new HashMap<>();
+    private final Map<RegistryEntry<SkillSlot>, RegistryEntry<Skill>> skillMap = new HashMap<>();
     private final Map<EquipmentSlot, ItemStack> itemStackMap = new HashMap<>();
 
     /**
@@ -23,7 +23,7 @@ public final class JobBuilder {
      * @param skillMap 스킬 맵
      * @return 자기 자신 객체
      */
-    public JobBuilder skillMap(Map<SkillSlot, RegistryEntry<Skill>> skillMap) {
+    public JobBuilder skillMap(Map<RegistryEntry<SkillSlot>, RegistryEntry<Skill>> skillMap) {
         this.skillMap.putAll(skillMap);
         return this;
     }
@@ -46,7 +46,7 @@ public final class JobBuilder {
      * @param skill 스킬 객체
      * @return 자기 자신 객체
      */
-    public JobBuilder equipSkill(SkillSlot slot, RegistryEntry<Skill> skill) {
+    public JobBuilder equipSkill(RegistryEntry<SkillSlot> slot, RegistryEntry<Skill> skill) {
         skillMap.put(slot, skill);
         return this;
     }
