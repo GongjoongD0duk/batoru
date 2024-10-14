@@ -11,8 +11,8 @@ import java.util.function.Predicate;
  * 정신 집중을 중단하도록 설정되어 있습니다.
  */
 public final class ChannelingBuilder {
-    private Predicate<ChannelingContext> stopWhen = context -> false;
     private Predicate<ChannelingContext> stopOnSilenced = context -> true;
+    private Predicate<ChannelingContext> stopWhen = context -> false;
     private Consumer<ChannelingContext> onTick = context -> {};
 
     /**
