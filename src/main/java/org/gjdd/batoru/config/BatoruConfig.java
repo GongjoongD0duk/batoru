@@ -55,7 +55,7 @@ public record BatoruConfig(
                         Action.HOTBAR_1, SkillSlot.NORMAL_1,
                         Action.HOTBAR_2, SkillSlot.NORMAL_2,
                         Action.HOTBAR_3, SkillSlot.NORMAL_3,
-                        Action.HOTBAR_4, SkillSlot.ULTIMATE
+                        Action.HOTBAR_4, SkillSlot.NORMAL_4
                 ),
                 List.of(
                         EquipmentSlot.MAINHAND,
