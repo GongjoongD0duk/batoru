@@ -4,14 +4,12 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import org.gjdd.batoru.channeling.Channeling;
 import org.gjdd.batoru.channeling.ChannelingContext;
 import org.gjdd.batoru.component.BatoruDataComponentTypes;
 import org.gjdd.batoru.config.BatoruConfigManager;
-import org.gjdd.batoru.effect.BatoruStatusEffectTags;
 import org.gjdd.batoru.event.JobCallbacks;
 import org.gjdd.batoru.event.SkillCallbacks;
 import org.gjdd.batoru.input.Action;
@@ -30,6 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
 
 @Mixin(value = LivingEntity.class)
 public abstract class LivingEntityMixin implements LivingEntityExtensions {
@@ -56,12 +55,12 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Override
     public boolean hasPushedStatusEffect() {
-        return batoru$hasStatusEffect(BatoruStatusEffectTags.PUSHED);
+        return batoru$hasStatusEffect(StatusEffect::isPushed);
     }
 
     @Override
     public boolean hasSilencedStatusEffect() {
-        return batoru$hasStatusEffect(BatoruStatusEffectTags.SILENCED);
+        return batoru$hasStatusEffect(StatusEffect::isSilenced);
     }
 
     @Override
@@ -238,11 +237,12 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
     }
 
     @Unique
-    private boolean batoru$hasStatusEffect(TagKey<StatusEffect> key) {
+    private boolean batoru$hasStatusEffect(Predicate<StatusEffect> predicate) {
         return ((LivingEntity) (Object) this).getActiveStatusEffects()
                 .keySet()
                 .stream()
-                .anyMatch(effect -> effect.isIn(key));
+                .map(RegistryEntry::value)
+                .anyMatch(predicate);
     }
 
     @Unique

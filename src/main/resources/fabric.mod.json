@@ -11,9 +11,6 @@
   "icon": "assets/batoru/icon.png",
   "environment": "*",
   "entrypoints": {
-    "fabric-datagen": [
-      "org.gjdd.batoru.datagen.BatoruModDataGenerator"
-    ],
     "main": [
       "org.gjdd.batoru.BatoruMod"
     ]
@@ -25,6 +22,9 @@
     "loom:injected_interfaces": {
       "net/minecraft/class_1309": [
         "org/gjdd/batoru/internal/LivingEntityExtensions"
+      ],
+      "net/minecraft/class_1291": [
+        "org/gjdd/batoru/internal/StatusEffectExtensions"
       ]
     }
   },

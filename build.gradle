@@ -16,10 +16,6 @@ dependencies {
     modImplementation "eu.pb4:placeholder-api:$placeholderApiVersion"
 }
 
-fabricApi {
-    configureDataGeneration()
-}
-
 processResources {
     filesMatching('fabric.mod.json') {
         expand project.properties
