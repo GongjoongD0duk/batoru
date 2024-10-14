@@ -71,8 +71,7 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Override
     public boolean startChanneling(Channeling channeling) {
-        if (batoru$channeling != null ||
-                !channeling.ignoreSilenced(channelingContext(channeling)) && hasSilencedStatusEffect()) {
+        if (batoru$channeling != null || hasSilencedStatusEffect()) {
             return false;
         }
 
@@ -178,13 +177,7 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
             return;
         }
 
-        var context = channelingContext(batoru$channeling);
-        if (!batoru$channeling.ignoreSilenced(context) && hasSilencedStatusEffect()) {
-            stopChanneling();
-            return;
-        }
-
-        batoru$channeling.onTick(context);
+        batoru$channeling.onTick(channelingContext(batoru$channeling));
         batoru$channelingTime++;
     }
 
