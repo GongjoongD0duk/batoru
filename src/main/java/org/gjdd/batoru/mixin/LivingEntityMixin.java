@@ -11,6 +11,8 @@ import org.gjdd.batoru.channeling.ChannelingContext;
 import org.gjdd.batoru.component.BatoruDataComponentTypes;
 import org.gjdd.batoru.config.BatoruConfigManager;
 import org.gjdd.batoru.effect.BatoruStatusEffectTags;
+import org.gjdd.batoru.event.JobCallbacks;
+import org.gjdd.batoru.event.SkillCallbacks;
 import org.gjdd.batoru.input.Action;
 import org.gjdd.batoru.input.ActionUtil;
 import org.gjdd.batoru.internal.LivingEntityExtensions;
@@ -83,11 +85,14 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
             return;
         }
 
+        var oldJob = batoru$job;
         batoru$job = job;
         if (job == null) {
             batoru$onJobRemoved();
+            JobCallbacks.AFTER_REMOVE.invoker().afterRemove((LivingEntity) (Object) this, oldJob);
         } else {
             batoru$onJobSet(job);
+            JobCallbacks.AFTER_SET.invoker().afterSet((LivingEntity) (Object) this, oldJob, job);
         }
     }
 
@@ -126,12 +131,19 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Override
     public SkillActionResult useSkill(RegistryEntry<Skill> skill) {
-        var actionResult = canUseSkill(skill);
-        if (actionResult instanceof SkillActionResult.Failure) {
-            return actionResult;
+        var context = skillContext(skill);
+        var callbackResult = SkillCallbacks.PRE_CONDITION.invoker().preCondition(context);
+        if (callbackResult instanceof SkillActionResult.Failure) {
+            return callbackResult;
         }
 
-        return skill.value().getAction().use(skillContext(skill));
+        var conditionResult = canUseSkill(skill);
+        if (conditionResult instanceof SkillActionResult.Failure) {
+            return conditionResult;
+        }
+
+        SkillCallbacks.PRE_ACTION.invoker().preAction(context);
+        return skill.value().getAction().use(context);
     }
 
     @Inject(method = "tick()V", at = @At(value = "TAIL"))

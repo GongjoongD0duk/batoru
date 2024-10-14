@@ -9,6 +9,8 @@
     "main": [
       "org.gjdd.batoru.channeling.ChannelingTest",
       "org.gjdd.batoru.compatibility.PlaceHolderTest",
+      "org.gjdd.batoru.event.JobCallbacksTest",
+      "org.gjdd.batoru.event.SkillCallbacksTest",
       "org.gjdd.batoru.job.JobTest",
       "org.gjdd.batoru.skill.SkillTest"
     ]
