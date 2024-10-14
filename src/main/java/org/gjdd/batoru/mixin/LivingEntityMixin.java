@@ -8,6 +8,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import org.gjdd.batoru.channeling.Channeling;
 import org.gjdd.batoru.channeling.ChannelingContext;
+import org.gjdd.batoru.component.BatoruDataComponentTypes;
 import org.gjdd.batoru.config.BatoruConfigManager;
 import org.gjdd.batoru.effect.BatoruStatusEffectTags;
 import org.gjdd.batoru.input.Action;
@@ -184,11 +185,17 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
             }
         }
 
+        var usableSlots = BatoruConfigManager.INSTANCE.getConfig().usableEquipmentSlots();
         job.value()
                 .getItemStackMap()
                 .forEach((slot, itemStack) -> {
+                    var copied = itemStack.copy();
+                    if (usableSlots.contains(slot)) {
+                        copied.set(BatoruDataComponentTypes.USABLE_JOB, job);
+                    }
+
                     entity.dropStack(entity.getEquippedStack(slot));
-                    entity.equipStack(slot, itemStack.copy());
+                    entity.equipStack(slot, copied);
                 });
     }
 
