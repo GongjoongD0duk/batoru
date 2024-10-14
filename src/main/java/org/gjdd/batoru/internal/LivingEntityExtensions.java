@@ -35,7 +35,7 @@ public interface LivingEntityExtensions {
      *
      * @return 밀쳐짐 상태 여부
      */
-    default boolean isPushed() {
+    default boolean hasPushedStatusEffect() {
         return false;
     }
 
@@ -44,7 +44,7 @@ public interface LivingEntityExtensions {
      *
      * @return 침묵 상태 여부
      */
-    default boolean isSilenced() {
+    default boolean hasSilencedStatusEffect() {
         return false;
     }
 

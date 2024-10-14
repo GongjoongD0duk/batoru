@@ -55,12 +55,12 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
     }
 
     @Override
-    public boolean isPushed() {
+    public boolean hasPushedStatusEffect() {
         return batoru$hasStatusEffect(BatoruStatusEffectTags.PUSHED);
     }
 
     @Override
-    public boolean isSilenced() {
+    public boolean hasSilencedStatusEffect() {
         return batoru$hasStatusEffect(BatoruStatusEffectTags.SILENCED);
     }
 
@@ -72,7 +72,7 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
     @Override
     public boolean startChanneling(Channeling channeling) {
         if (batoru$channeling != null ||
-                !channeling.ignoreSilenced(channelingContext(channeling)) && isSilenced()) {
+                !channeling.ignoreSilenced(channelingContext(channeling)) && hasSilencedStatusEffect()) {
             return false;
         }
 
@@ -140,7 +140,7 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
             return SkillActionResult.channeling();
         }
 
-        if (!skill.value().getCondition().ignoreSilenced(context) && isSilenced()) {
+        if (!skill.value().getCondition().ignoreSilenced(context) && hasSilencedStatusEffect()) {
             return SkillActionResult.silenced();
         }
 
@@ -192,7 +192,7 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
         }
 
         var context = channelingContext(batoru$channeling);
-        if (!batoru$channeling.ignoreSilenced(context) && isSilenced()) {
+        if (!batoru$channeling.ignoreSilenced(context) && hasSilencedStatusEffect()) {
             stopChanneling();
             return;
         }
@@ -203,7 +203,7 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Unique
     private void batoru$pushedStatusEffectTick() {
-        if (!isPushed()) {
+        if (!hasPushedStatusEffect()) {
             return;
         }
 
