@@ -8,7 +8,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * {@link SkillCondition}의 빌더 클래스입니다.
+ * {@link SkillCondition}의 빌더 클래스입니다. 이 빌더는 기본적으로 쿨다운, 정신 집중,
+ * 침묵 여부를 확인하도록 설정되어 있습니다.
  */
 public final class SkillConditionBuilder {
     private Predicate<SkillContext> ignoreCooldown = context -> false;
@@ -17,7 +18,7 @@ public final class SkillConditionBuilder {
     private Function<SkillContext, SkillActionResult> canUse = context -> SkillActionResult.success();
 
     /**
-     * {@link SkillCondition#ignoreCooldown} 메서드를 주어진 람다로 설정합니다.
+     * 주어진 컨텍스트에서 쿨다운을 무시할지 설정합니다.
      *
      * @param ignoreCooldown Predicate 객체
      * @return 자기 자신 객체
@@ -28,7 +29,7 @@ public final class SkillConditionBuilder {
     }
 
     /**
-     * {@link SkillCondition#ignoreCooldown} 메서드가 항상 주어진 boolean 값을 반환하도록 설정합니다.
+     * 주어진 컨텍스트에서 쿨다운을 무시할지 설정합니다.
      *
      * @param ignoreCooldown boolean 값
      * @return 자기 자신 객체
@@ -38,7 +39,7 @@ public final class SkillConditionBuilder {
     }
 
     /**
-     * {@link SkillCondition#ignoreChanneling} 메서드를 주어진 람다로 설정합니다.
+     * 주어진 컨텍스트에서 정신 집중을 무시할지 설정합니다.
      *
      * @param ignoreChanneling Predicate 객체
      * @return 자기 자신 객체
@@ -49,7 +50,7 @@ public final class SkillConditionBuilder {
     }
 
     /**
-     * {@link SkillCondition#ignoreChanneling} 메서드가 항상 주어진 boolean 값을 반환하도록 설정합니다.
+     * 주어진 컨텍스트에서 정신 집중을 무시할지 설정합니다.
      *
      * @param ignoreChanneling boolean 값
      * @return 자기 자신 객체
@@ -59,7 +60,7 @@ public final class SkillConditionBuilder {
     }
 
     /**
-     * {@link SkillCondition#ignoreSilenced} 메서드를 주어진 람다로 설정합니다.
+     * 주어진 컨텍스트에서 침묵 상태를 무시할지 설정합니다.
      *
      * @param ignoreSilenced Predicate 객체
      * @return 자기 자신 객체
@@ -70,7 +71,7 @@ public final class SkillConditionBuilder {
     }
 
     /**
-     * {@link SkillCondition#ignoreSilenced} 메서드가 항상 주어진 boolean 값을 반환하도록 설정합니다.
+     * 주어진 컨텍스트에서 침묵 상태를 무시할지 설정합니다.
      *
      * @param ignoreSilenced boolean 값
      * @return 자기 자신 객체
@@ -96,26 +97,20 @@ public final class SkillConditionBuilder {
      * @return Skill 객체
      */
     public SkillCondition build() {
-        return new SkillCondition() {
-            @Override
-            public boolean ignoreCooldown(SkillContext context) {
-                return ignoreCooldown.test(context);
+        return context -> {
+            if (!ignoreCooldown.test(context) && context.source().hasSkillCooldown(context.skill())) {
+                return SkillActionResult.cooldown();
             }
 
-            @Override
-            public boolean ignoreChanneling(SkillContext context) {
-                return ignoreChanneling.test(context);
+            if (!ignoreChanneling.test(context) && context.source().isChanneling()) {
+                return SkillActionResult.cooldown();
             }
 
-            @Override
-            public boolean ignoreSilenced(SkillContext context) {
-                return ignoreSilenced.test(context);
+            if (!ignoreSilenced.test(context) && context.source().hasSilencedStatusEffect()) {
+                return SkillActionResult.cooldown();
             }
 
-            @Override
-            public SkillActionResult canUse(SkillContext context) {
-                return canUse.apply(context);
-            }
+            return canUse.apply(context);
         };
     }
 }

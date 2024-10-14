@@ -131,20 +131,7 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Override
     public SkillActionResult canUseSkill(RegistryEntry<Skill> skill) {
-        var context = skillContext(skill);
-        if (!skill.value().getCondition().ignoreCooldown(context) && hasSkillCooldown(skill)) {
-            return SkillActionResult.cooldown();
-        }
-
-        if (!skill.value().getCondition().ignoreChanneling(context) && isChanneling()) {
-            return SkillActionResult.channeling();
-        }
-
-        if (!skill.value().getCondition().ignoreSilenced(context) && hasSilencedStatusEffect()) {
-            return SkillActionResult.silenced();
-        }
-
-        return skill.value().getCondition().canUse(context);
+        return skill.value().getCondition().canUse(skillContext(skill));
     }
 
     @Override
