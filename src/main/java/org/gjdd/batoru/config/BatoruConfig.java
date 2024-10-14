@@ -12,11 +12,11 @@ import java.util.Map;
 /**
  * 모드의 설정을 담는 레코드입니다.
  *
- * @param usableEquipmentSlots {@link #autoEquipItems} 설정으로 직업의 장비를 자동으로 장착할 때, 지정된 슬롯에
- *                             있는 아이템의 `batoru:usable_job` 컴포넌트를 해당 직업으로 설정하도록 합니다.
  * @param skillSlotMappings    동작에 대응하는 스킬 슬롯을 나타내는 맵입니다. 플레이어가 동작을 수행하면, 해당 동작에
  *                             매핑된 스킬 슬롯이 작동합니다. 이때, 기존의 동작은 가능한 경우 취소됩니다. 핫바를 선택하는
  *                             동작을 매핑한 경우, 해당 인벤토리 슬롯은 사용할 수 없게 됩니다.
+ * @param usableEquipmentSlots {@link #autoEquipItems} 설정으로 직업의 장비를 자동으로 장착할 때, 지정된 슬롯에
+ *                             있는 아이템의 `batoru:usable_job` 컴포넌트를 해당 직업으로 설정하도록 합니다.
  * @param autoEquipItems       직업이 정해질 때 자동으로 장비를 장착할지 여부입니다.
  */
 public record BatoruConfig(
