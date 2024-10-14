@@ -8,8 +8,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * {@link SkillCondition}의 빌더 클래스입니다. 이 빌더는 기본적으로 쿨다운, 정신 집중,
- * 침묵 상태일 때 실패하도록 설정되어 있습니다.
+ * {@link SkillCondition}의 빌더 클래스입니다.
  */
 public final class SkillConditionBuilder {
     private Predicate<SkillContext> checkCooldown = context -> true;

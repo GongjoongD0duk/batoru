@@ -54,6 +54,15 @@ public sealed interface SkillActionResult {
     }
 
     /**
+     * 사용할 수 없는 상태로 인한 실패 결과를 반환합니다.
+     *
+     * @return 실패 결과
+     */
+    static SkillActionResult unavailable() {
+        return failure(Text.translatable("skill.unavailable"));
+    }
+
+    /**
      * 스킬 사용에 성공했음을 나타내는 클래스입니다.
      */
     record Success() implements SkillActionResult {

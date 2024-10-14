@@ -10,7 +10,7 @@ public final class SkillCallbacksTest implements ModInitializer {
         SkillCallbacks.PRE_CONDITION.register(context -> {
             if (context.source().isSneaking()) {
                 context.source().sendMessage(Text.literal("pre condition called (prevent)"));
-                return SkillActionResult.failure(Text.literal("Don't sneak!"));
+                return SkillActionResult.unavailable();
             }
 
             context.source().sendMessage(Text.literal("pre condition called (pass)"));

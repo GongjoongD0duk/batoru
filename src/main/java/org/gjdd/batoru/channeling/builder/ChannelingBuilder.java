@@ -7,8 +7,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
- * {@link Channeling}의 빌더 클래스입니다. 이 빌더 클래스는 기본적으로 침묵 상태일 때
- * 정신 집중을 중단하도록 설정되어 있습니다.
+ * {@link Channeling}의 빌더 클래스입니다.
  */
 public final class ChannelingBuilder {
     private Predicate<ChannelingContext> stopOnSilenced = context -> true;

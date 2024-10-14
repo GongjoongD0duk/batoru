@@ -2,15 +2,14 @@ package org.gjdd.batoru.skill.builder;
 
 import org.gjdd.batoru.skill.Skill;
 import org.gjdd.batoru.skill.SkillAction;
-import org.gjdd.batoru.skill.SkillActionResult;
 import org.gjdd.batoru.skill.SkillCondition;
 
 /**
  * {@link Skill}의 빌더 클래스입니다.
  */
 public final class SkillBuilder {
-    private SkillCondition condition = context -> SkillActionResult.success();
-    private SkillAction action = context -> SkillActionResult.success();
+    private SkillCondition condition = SkillCondition.builder().build();
+    private SkillAction action = SkillAction.builder().build();
 
     /**
      * 스킬의 조건을 설정합니다.
