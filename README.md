@@ -12,6 +12,6 @@ repositories {
 }
 
 dependencies {
-    modImplementation 'com.github.GongjoongD0duk:batoru:0.1.3'
+    modImplementation 'com.github.GongjoongD0duk:batoru:0.3.2'
 }
 ```
