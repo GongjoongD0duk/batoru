@@ -20,6 +20,8 @@ final class BatoruStatusEffectTagProvider extends FabricTagProvider<StatusEffect
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
+        getOrCreateTagBuilder(BatoruStatusEffectTags.PUSHED)
+                .add(BatoruStatusEffects.PUSHED.value());
         getOrCreateTagBuilder(BatoruStatusEffectTags.SILENCED)
                 .add(BatoruStatusEffects.SILENCED.value());
     }

@@ -6,6 +6,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 
 public final class BatoruStatusEffectTags {
+    public static final TagKey<StatusEffect> PUSHED = of("pushed");
     public static final TagKey<StatusEffect> SILENCED = of("silenced");
 
     public static void register() {

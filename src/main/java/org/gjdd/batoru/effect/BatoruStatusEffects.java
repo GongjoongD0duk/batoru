@@ -8,6 +8,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 public final class BatoruStatusEffects {
+    public static final RegistryEntry<StatusEffect> PUSHED = register("pushed", new StatusEffectImpl(StatusEffectCategory.HARMFUL, 0));
     public static final RegistryEntry<StatusEffect> SILENCED = register("silenced", new StatusEffectImpl(StatusEffectCategory.HARMFUL, 0));
 
     public static void register() {

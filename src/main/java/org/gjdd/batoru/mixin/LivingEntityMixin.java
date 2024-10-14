@@ -6,6 +6,7 @@ import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.Vec3d;
 import org.gjdd.batoru.channeling.Channeling;
 import org.gjdd.batoru.channeling.ChannelingContext;
 import org.gjdd.batoru.component.BatoruDataComponentTypes;
@@ -40,6 +41,23 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
     private @Nullable Channeling batoru$channeling;
     @Unique
     private int batoru$channelingTime = -1;
+    @Unique
+    private Vec3d batoru$pushedVelocity = Vec3d.ZERO;
+
+    @Override
+    public Vec3d getPushedVelocity() {
+        return batoru$pushedVelocity;
+    }
+
+    @Override
+    public void setPushedVelocity(Vec3d pushedVelocity) {
+        batoru$pushedVelocity = pushedVelocity;
+    }
+
+    @Override
+    public boolean isPushed() {
+        return batoru$hasStatusEffect(BatoruStatusEffectTags.PUSHED);
+    }
 
     @Override
     public boolean isSilenced() {
@@ -154,6 +172,7 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
         batoru$skillCooldownsTick();
         batoru$channelingTick();
+        batoru$pushedStatusEffectTick();
     }
 
     @Unique
@@ -180,6 +199,18 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
         batoru$channeling.onTick(context);
         batoru$channelingTime++;
+    }
+
+    @Unique
+    private void batoru$pushedStatusEffectTick() {
+        if (!isPushed()) {
+            return;
+        }
+
+        var entity = (LivingEntity) (Object) this;
+        entity.setVelocity(getPushedVelocity());
+        entity.velocityDirty = true;
+        entity.velocityModified = true;
     }
 
     @Unique

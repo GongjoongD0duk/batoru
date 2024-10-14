@@ -1,6 +1,7 @@
 package org.gjdd.batoru.internal;
 
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.math.Vec3d;
 import org.gjdd.batoru.channeling.Channeling;
 import org.gjdd.batoru.job.Job;
 import org.gjdd.batoru.skill.Skill;
@@ -11,6 +12,32 @@ import org.jetbrains.annotations.Nullable;
  * {@link net.minecraft.entity.LivingEntity} 클래스에 주입되는 인터페이스입니다.
  */
 public interface LivingEntityExtensions {
+
+    /**
+     * 엔티티가 밀쳐짐 상태일 때 고정되는 속도를 반환합니다.
+     *
+     * @return 고정되는 속도
+     */
+    default Vec3d getPushedVelocity() {
+        return null;
+    }
+
+    /**
+     * 엔티티가 밀쳐짐 상태일 때 고정되는 속도를 설정합니다.
+     *
+     * @param pushedVelocity 고정되는 속도
+     */
+    default void setPushedVelocity(Vec3d pushedVelocity) {
+    }
+
+    /**
+     * 엔티티가 밀쳐짐 상태인지 여부를 반환합니다.
+     *
+     * @return 밀쳐짐 상태 여부
+     */
+    default boolean isPushed() {
+        return false;
+    }
 
     /**
      * 엔티티가 침묵 상태인지 여부를 반환합니다.
