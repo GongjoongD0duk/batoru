@@ -9,75 +9,75 @@ import java.util.function.Predicate;
 
 /**
  * {@link SkillCondition}의 빌더 클래스입니다. 이 빌더는 기본적으로 쿨다운, 정신 집중,
- * 침묵 여부를 확인하도록 설정되어 있습니다.
+ * 침묵 상태일 때 실패하도록 설정되어 있습니다.
  */
 public final class SkillConditionBuilder {
-    private Predicate<SkillContext> ignoreCooldown = context -> false;
-    private Predicate<SkillContext> ignoreChanneling = context -> false;
-    private Predicate<SkillContext> ignoreSilenced = context -> false;
+    private Predicate<SkillContext> checkCooldown = context -> true;
+    private Predicate<SkillContext> checkChanneling = context -> true;
+    private Predicate<SkillContext> checkSilenced = context -> true;
     private Function<SkillContext, SkillActionResult> canUse = context -> SkillActionResult.success();
 
     /**
-     * 주어진 컨텍스트에서 쿨다운을 무시할지 설정합니다.
+     * 지정된 조건을 만족할 경우, 쿨다운 상태일 때 실패하도록 설정합니다.
      *
-     * @param ignoreCooldown Predicate 객체
+     * @param checkCooldown Predicate 객체
      * @return 자기 자신 객체
      */
-    public SkillConditionBuilder ignoreCooldown(Predicate<SkillContext> ignoreCooldown) {
-        this.ignoreCooldown = ignoreCooldown;
+    public SkillConditionBuilder checkCooldown(Predicate<SkillContext> checkCooldown) {
+        this.checkCooldown = checkCooldown;
         return this;
     }
 
     /**
-     * 주어진 컨텍스트에서 쿨다운을 무시할지 설정합니다.
+     * 쿨다운 상태일 때 실패할지 여부를 설정합니다.
      *
-     * @param ignoreCooldown boolean 값
+     * @param checkCooldown boolean 값
      * @return 자기 자신 객체
      */
-    public SkillConditionBuilder ignoreCooldown(boolean ignoreCooldown) {
-        return ignoreCooldown(context -> ignoreCooldown);
+    public SkillConditionBuilder checkCooldown(boolean checkCooldown) {
+        return checkCooldown(context -> checkCooldown);
     }
 
     /**
-     * 주어진 컨텍스트에서 정신 집중을 무시할지 설정합니다.
+     * 지정된 조건을 만족할 경우, 정신 집중 중일 때 실패하도록 설정합니다.
      *
-     * @param ignoreChanneling Predicate 객체
+     * @param checkChanneling Predicate 객체
      * @return 자기 자신 객체
      */
-    public SkillConditionBuilder ignoreChanneling(Predicate<SkillContext> ignoreChanneling) {
-        this.ignoreChanneling = ignoreChanneling;
+    public SkillConditionBuilder checkChanneling(Predicate<SkillContext> checkChanneling) {
+        this.checkChanneling = checkChanneling;
         return this;
     }
 
     /**
-     * 주어진 컨텍스트에서 정신 집중을 무시할지 설정합니다.
+     * 정신 집중 중일 때 실패할지 여부를 설정합니다.
      *
-     * @param ignoreChanneling boolean 값
+     * @param checkChanneling boolean 값
      * @return 자기 자신 객체
      */
-    public SkillConditionBuilder ignoreChanneling(boolean ignoreChanneling) {
-        return ignoreChanneling(context -> ignoreChanneling);
+    public SkillConditionBuilder checkChanneling(boolean checkChanneling) {
+        return checkChanneling(context -> checkChanneling);
     }
 
     /**
-     * 주어진 컨텍스트에서 침묵 상태를 무시할지 설정합니다.
+     * 지정된 조건을 만족할 경우, 침묵 상태일 때 실패하도록 설정합니다.
      *
-     * @param ignoreSilenced Predicate 객체
+     * @param checkSilenced Predicate 객체
      * @return 자기 자신 객체
      */
-    public SkillConditionBuilder ignoreSilenced(Predicate<SkillContext> ignoreSilenced) {
-        this.ignoreSilenced = ignoreSilenced;
+    public SkillConditionBuilder checkSilenced(Predicate<SkillContext> checkSilenced) {
+        this.checkSilenced = checkSilenced;
         return this;
     }
 
     /**
-     * 주어진 컨텍스트에서 침묵 상태를 무시할지 설정합니다.
+     * 침묵 상태일 때 실패할지 여부를 설정합니다.
      *
-     * @param ignoreSilenced boolean 값
+     * @param checkSilenced boolean 값
      * @return 자기 자신 객체
      */
-    public SkillConditionBuilder ignoreSilenced(boolean ignoreSilenced) {
-        return ignoreSilenced(context -> ignoreSilenced);
+    public SkillConditionBuilder checkSilenced(boolean checkSilenced) {
+        return checkSilenced(context -> checkSilenced);
     }
 
     /**
@@ -98,16 +98,16 @@ public final class SkillConditionBuilder {
      */
     public SkillCondition build() {
         return context -> {
-            if (!ignoreCooldown.test(context) && context.source().hasSkillCooldown(context.skill())) {
+            if (checkCooldown.test(context) && context.source().hasSkillCooldown(context.skill())) {
                 return SkillActionResult.cooldown();
             }
 
-            if (!ignoreChanneling.test(context) && context.source().isChanneling()) {
-                return SkillActionResult.cooldown();
+            if (checkChanneling.test(context) && context.source().isChanneling()) {
+                return SkillActionResult.channeling();
             }
 
-            if (!ignoreSilenced.test(context) && context.source().hasSilencedStatusEffect()) {
-                return SkillActionResult.cooldown();
+            if (checkSilenced.test(context) && context.source().hasSilencedStatusEffect()) {
+                return SkillActionResult.silenced();
             }
 
             return canUse.apply(context);
