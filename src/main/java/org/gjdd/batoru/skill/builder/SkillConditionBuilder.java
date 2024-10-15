@@ -19,7 +19,7 @@ public final class SkillConditionBuilder {
     private Function<SkillContext, SkillActionResult> canUse = context -> SkillActionResult.success();
 
     /**
-     * 지정된 조건을 만족할 경우, 사망 상태일 실패하도록 설정합니다.
+     * 지정된 조건을 만족할 경우, 사망 상태일 때 실패하도록 설정합니다.
      *
      * @param failIfDead Predicate 객체
      * @return 자기 자신 객체
@@ -30,7 +30,7 @@ public final class SkillConditionBuilder {
     }
 
     /**
-     * 사망 상태일 실패할지 여부를 설정합니다.
+     * 사망 상태일 때 실패할지 여부를 설정합니다.
      *
      * @param failIfDead boolean 값
      * @return 자기 자신 객체
