@@ -10,29 +10,73 @@ import java.util.function.Predicate;
  * {@link Channeling}의 빌더 클래스입니다.
  */
 public final class ChannelingBuilder {
-    private Predicate<ChannelingContext> stopOnSilenced = context -> true;
+    private Predicate<ChannelingContext> stopIfDead = context -> true;
+    private Predicate<ChannelingContext> stopIfSpectator = context -> true;
+    private Predicate<ChannelingContext> stopIfSilenced = context -> true;
     private Predicate<ChannelingContext> stopWhen = context -> false;
     private Consumer<ChannelingContext> onTick = context -> {};
 
     /**
-     * 침묵 상태일 때, 지정된 조건을 만족할 경우, 정신 집중을 중단하도록 설정합니다.
+     * 사망 상태일 때, 지정된 조건을 만족할 경우, 정신 집중을 중단하도록 설정합니다.
      *
-     * @param stopOnSilenced Predicate 객체
+     * @param stopIfDead Predicate 객체
      * @return 자기 자신 객체
      */
-    public ChannelingBuilder stopOnSilenced(Predicate<ChannelingContext> stopOnSilenced) {
-        this.stopOnSilenced = stopOnSilenced;
+    public ChannelingBuilder stopIfDead(Predicate<ChannelingContext> stopIfDead) {
+        this.stopIfDead = stopIfDead;
+        return this;
+    }
+
+    /**
+     * 사망 상태일 때, 정신 집중을 중단할지 설정합니다.
+     *
+     * @param stopIfDead boolean 값
+     * @return 자기 자신 객체
+     */
+    public ChannelingBuilder stopIfDead(boolean stopIfDead) {
+        return stopIfDead(context -> stopIfDead);
+    }
+
+    /**
+     * 관전 상태일 때, 지정된 조건을 만족할 경우, 정신 집중을 중단하도록 설정합니다.
+     *
+     * @param stopIfSpectator Predicate 객체
+     * @return 자기 자신 객체
+     */
+    public ChannelingBuilder stopIfSpectator(Predicate<ChannelingContext> stopIfSpectator) {
+        this.stopIfSpectator = stopIfSpectator;
+        return this;
+    }
+
+    /**
+     * 관전 상태일 때, 정신 집중을 중단할지 설정합니다.
+     *
+     * @param stopIfSpectator boolean 값
+     * @return 자기 자신 객체
+     */
+    public ChannelingBuilder stopIfSpectator(boolean stopIfSpectator) {
+        return stopIfSpectator(context -> stopIfSpectator);
+    }
+
+    /**
+     * 침묵 상태일 때, 지정된 조건을 만족할 경우, 정신 집중을 중단하도록 설정합니다.
+     *
+     * @param stopIfSilenced Predicate 객체
+     * @return 자기 자신 객체
+     */
+    public ChannelingBuilder stopIfSilenced(Predicate<ChannelingContext> stopIfSilenced) {
+        this.stopIfSilenced = stopIfSilenced;
         return this;
     }
 
     /**
      * 침묵 상태일 때, 정신 집중을 중단할지 설정합니다.
      *
-     * @param stopOnSilenced boolean 값
+     * @param stopIfSilenced boolean 값
      * @return 자기 자신 객체
      */
-    public ChannelingBuilder stopOnSilenced(boolean stopOnSilenced) {
-        return stopOnSilenced(context -> stopOnSilenced);
+    public ChannelingBuilder stopIfSilenced(boolean stopIfSilenced) {
+        return stopIfSilenced(context -> stopIfSilenced);
     }
 
     /**
@@ -64,13 +108,13 @@ public final class ChannelingBuilder {
      */
     public Channeling build() {
         return context -> {
-            if (stopOnSilenced.test(context) && context.source().hasSilencedStatusEffect()) {
+            if (stopIfSpectator.test(context) && context.source().isSpectator() ||
+                    stopIfSilenced.test(context) && context.source().hasSilencedStatusEffect() ||
+                    stopIfDead.test(context) && context.source().isDead() ||
+                    stopWhen.test(context)) {
                 context.source().stopChanneling();
             } else {
                 onTick.accept(context);
-                if (stopWhen.test(context)) {
-                    context.source().stopChanneling();
-                }
             }
         };
     }

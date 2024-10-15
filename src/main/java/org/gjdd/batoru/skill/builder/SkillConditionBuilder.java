@@ -11,72 +11,116 @@ import java.util.function.Predicate;
  * {@link SkillCondition}의 빌더 클래스입니다.
  */
 public final class SkillConditionBuilder {
-    private Predicate<SkillContext> checkCooldown = context -> true;
-    private Predicate<SkillContext> checkChanneling = context -> true;
-    private Predicate<SkillContext> checkSilenced = context -> true;
+    private Predicate<SkillContext> failIfDead = context -> true;
+    private Predicate<SkillContext> failIfSpectator = context -> true;
+    private Predicate<SkillContext> failIfCooldown = context -> true;
+    private Predicate<SkillContext> failIfChanneling = context -> true;
+    private Predicate<SkillContext> failIfSilenced = context -> true;
     private Function<SkillContext, SkillActionResult> canUse = context -> SkillActionResult.success();
+
+    /**
+     * 지정된 조건을 만족할 경우, 사망 상태일 실패하도록 설정합니다.
+     *
+     * @param failIfDead Predicate 객체
+     * @return 자기 자신 객체
+     */
+    public SkillConditionBuilder failIfDead(Predicate<SkillContext> failIfDead) {
+        this.failIfDead = failIfDead;
+        return this;
+    }
+
+    /**
+     * 사망 상태일 실패할지 여부를 설정합니다.
+     *
+     * @param failIfDead boolean 값
+     * @return 자기 자신 객체
+     */
+    public SkillConditionBuilder failIfDead(boolean failIfDead) {
+        return failIfDead(context -> failIfDead);
+    }
+
+    /**
+     * 지정된 조건을 만족할 경우, 관전 상태일 때 실패하도록 설정합니다.
+     *
+     * @param failIfSpectator Predicate 객체
+     * @return 자기 자신 객체
+     */
+    public SkillConditionBuilder failIfSpectator(Predicate<SkillContext> failIfSpectator) {
+        this.failIfSpectator = failIfSpectator;
+        return this;
+    }
+
+    /**
+     * 관전 상태일 때 실패할지 여부를 설정합니다.
+     *
+     * @param failIfSpectator boolean 값
+     * @return 자기 자신 객체
+     */
+    public SkillConditionBuilder failIfSpectator(boolean failIfSpectator) {
+        return failIfSpectator(context -> failIfSpectator);
+    }
 
     /**
      * 지정된 조건을 만족할 경우, 쿨다운 상태일 때 실패하도록 설정합니다.
      *
-     * @param checkCooldown Predicate 객체
+     * @param failIfCooldown Predicate 객체
      * @return 자기 자신 객체
      */
-    public SkillConditionBuilder checkCooldown(Predicate<SkillContext> checkCooldown) {
-        this.checkCooldown = checkCooldown;
+    public SkillConditionBuilder failIfCooldown(Predicate<SkillContext> failIfCooldown) {
+        this.failIfCooldown = failIfCooldown;
         return this;
     }
 
     /**
      * 쿨다운 상태일 때 실패할지 여부를 설정합니다.
      *
-     * @param checkCooldown boolean 값
+     * @param failIfCooldown boolean 값
      * @return 자기 자신 객체
      */
-    public SkillConditionBuilder checkCooldown(boolean checkCooldown) {
-        return checkCooldown(context -> checkCooldown);
+    public SkillConditionBuilder failIfCooldown(boolean failIfCooldown) {
+        return failIfCooldown(context -> failIfCooldown);
     }
 
     /**
      * 지정된 조건을 만족할 경우, 정신 집중 중일 때 실패하도록 설정합니다.
      *
-     * @param checkChanneling Predicate 객체
+     * @param failIfChanneling Predicate 객체
      * @return 자기 자신 객체
      */
-    public SkillConditionBuilder checkChanneling(Predicate<SkillContext> checkChanneling) {
-        this.checkChanneling = checkChanneling;
+    public SkillConditionBuilder failIfChanneling(Predicate<SkillContext> failIfChanneling) {
+        this.failIfChanneling = failIfChanneling;
         return this;
     }
 
     /**
      * 정신 집중 중일 때 실패할지 여부를 설정합니다.
      *
-     * @param checkChanneling boolean 값
+     * @param failIfChanneling boolean 값
      * @return 자기 자신 객체
      */
-    public SkillConditionBuilder checkChanneling(boolean checkChanneling) {
-        return checkChanneling(context -> checkChanneling);
+    public SkillConditionBuilder failIfChanneling(boolean failIfChanneling) {
+        return failIfChanneling(context -> failIfChanneling);
     }
 
     /**
      * 지정된 조건을 만족할 경우, 침묵 상태일 때 실패하도록 설정합니다.
      *
-     * @param checkSilenced Predicate 객체
+     * @param failIfSilenced Predicate 객체
      * @return 자기 자신 객체
      */
-    public SkillConditionBuilder checkSilenced(Predicate<SkillContext> checkSilenced) {
-        this.checkSilenced = checkSilenced;
+    public SkillConditionBuilder failIfSilenced(Predicate<SkillContext> failIfSilenced) {
+        this.failIfSilenced = failIfSilenced;
         return this;
     }
 
     /**
      * 침묵 상태일 때 실패할지 여부를 설정합니다.
      *
-     * @param checkSilenced boolean 값
+     * @param failIfSilenced boolean 값
      * @return 자기 자신 객체
      */
-    public SkillConditionBuilder checkSilenced(boolean checkSilenced) {
-        return checkSilenced(context -> checkSilenced);
+    public SkillConditionBuilder failIfSilenced(boolean failIfSilenced) {
+        return failIfSilenced(context -> failIfSilenced);
     }
 
     /**
@@ -97,15 +141,23 @@ public final class SkillConditionBuilder {
      */
     public SkillCondition build() {
         return context -> {
-            if (checkCooldown.test(context) && context.source().hasSkillCooldown(context.skill())) {
+            if (failIfDead.test(context) && context.source().isDead()) {
+                return SkillActionResult.unavailable();
+            }
+
+            if (failIfSpectator.test(context) && context.source().isSpectator()) {
+                return SkillActionResult.unavailable();
+            }
+
+            if (failIfCooldown.test(context) && context.source().hasSkillCooldown(context.skill())) {
                 return SkillActionResult.cooldown();
             }
 
-            if (checkChanneling.test(context) && context.source().isChanneling()) {
+            if (failIfChanneling.test(context) && context.source().isChanneling()) {
                 return SkillActionResult.channeling();
             }
 
-            if (checkSilenced.test(context) && context.source().hasSilencedStatusEffect()) {
+            if (failIfSilenced.test(context) && context.source().hasSilencedStatusEffect()) {
                 return SkillActionResult.silenced();
             }
 
