@@ -28,7 +28,7 @@ public final class ChannelingBuilder {
     }
 
     /**
-     * 사망 상태일 때, 정신 집중을 중단할지 설정합니다.
+     * 사망 상태일 때, 정신 집중을 중단할지 여부를 설정합니다.
      *
      * @param stopIfDead boolean 값
      * @return 자기 자신 객체
@@ -49,7 +49,7 @@ public final class ChannelingBuilder {
     }
 
     /**
-     * 관전 상태일 때, 정신 집중을 중단할지 설정합니다.
+     * 관전 상태일 때, 정신 집중을 중단할지 여부를 설정합니다.
      *
      * @param stopIfSpectator boolean 값
      * @return 자기 자신 객체
@@ -70,7 +70,7 @@ public final class ChannelingBuilder {
     }
 
     /**
-     * 침묵 상태일 때, 정신 집중을 중단할지 설정합니다.
+     * 침묵 상태일 때, 정신 집중을 중단할지 여부를 설정합니다.
      *
      * @param stopIfSilenced boolean 값
      * @return 자기 자신 객체
