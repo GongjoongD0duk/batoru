@@ -3,7 +3,6 @@ package org.gjdd.batoru.skill;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import org.gjdd.batoru.registry.BatoruRegistries;
-import org.gjdd.batoru.skill.builder.SkillBuilder;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -25,15 +24,6 @@ public final class Skill {
     public Skill(SkillCondition condition, SkillAction action) {
         this.condition = condition;
         this.action = action;
-    }
-
-    /**
-     * 이 클래스의 빌더 객체를 생성하여 반환합니다.
-     *
-     * @return 빌더 객체
-     */
-    public static SkillBuilder builder() {
-        return new SkillBuilder();
     }
 
     /**

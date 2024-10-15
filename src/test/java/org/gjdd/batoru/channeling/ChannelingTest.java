@@ -6,13 +6,14 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.Text;
 
 public final class ChannelingTest implements ModInitializer {
-    private final Channeling channeling = Channeling.builder()
-            .onTick(context ->
-                    context.source().sendMessage(
-                            Text.literal("channeling: " + context.time())
-                    )
-            ).stopWhen(context -> context.time() >= 10)
-            .build();
+    private final Channeling channeling = context -> {
+        if (context.time() >= 10) {
+            context.source().stopChanneling();
+            return;
+        }
+
+        context.source().sendMessage(Text.literal("channeling: " + context.time()));
+    };
 
     @Override
     public void onInitialize() {
