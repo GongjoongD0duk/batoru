@@ -6,17 +6,47 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.ApiStatus;
 
 public final class BatoruStatusEffects {
+    @ApiStatus.Experimental
+    public static final RegistryEntry<StatusEffect> AIRBORNE = register(
+            "airborne",
+            new StatusEffectImpl(StatusEffectCategory.HARMFUL, 0)
+                    .setPushed(true)
+                    .setSilenced(true)
+                    .addDisarmedAttributeModifiers()
+                    .addRootedAttributeModifiers()
+    );
+    @ApiStatus.Experimental
+    public static final RegistryEntry<StatusEffect> DISARMED = register(
+            "disarmed",
+            new StatusEffectImpl(StatusEffectCategory.HARMFUL, 0)
+                    .addDisarmedAttributeModifiers()
+    );
     public static final RegistryEntry<StatusEffect> PUSHED = register(
             "pushed",
             new StatusEffectImpl(StatusEffectCategory.HARMFUL, 0)
                     .setPushed(true)
     );
+    @ApiStatus.Experimental
+    public static final RegistryEntry<StatusEffect> ROOTED = register(
+            "rooted",
+            new StatusEffectImpl(StatusEffectCategory.HARMFUL, 0)
+                    .addRootedAttributeModifiers()
+    );
     public static final RegistryEntry<StatusEffect> SILENCED = register(
             "silenced",
             new StatusEffectImpl(StatusEffectCategory.HARMFUL, 0)
                     .setSilenced(true)
+    );
+    @ApiStatus.Experimental
+    public static final RegistryEntry<StatusEffect> STUNNED = register(
+            "stunned",
+            new StatusEffectImpl(StatusEffectCategory.HARMFUL, 0)
+                    .setSilenced(true)
+                    .addDisarmedAttributeModifiers()
+                    .addRootedAttributeModifiers()
     );
 
     public static void register() {
