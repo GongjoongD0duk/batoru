@@ -151,7 +151,8 @@ public abstract class LivingEntityMixin implements LivingEntityExtensions {
 
     @Inject(method = "tick()V", at = @At(value = "TAIL"))
     private void batoru$injectTick(CallbackInfo info) {
-        if (((LivingEntity) (Object) this).getWorld().isClient()) {
+        var entity = (LivingEntity) (Object) this;
+        if (entity.getWorld().isClient() || entity.isDead() || entity.isSpectator()) {
             return;
         }
 
