@@ -21,7 +21,10 @@ public final class ChannelingTest implements ModInitializer {
                 dispatcher.register(
                         CommandManager.literal("channelingtest")
                                 .executes(context -> {
-                                    context.getSource().getPlayerOrThrow().startChanneling(channeling);
+                                    context.getSource().getPlayerOrThrow().startChanneling(
+                                            channeling.stopIfPushed()
+                                                    .stopIfSilenced()
+                                    );
                                     return 1;
                                 })
                 )
